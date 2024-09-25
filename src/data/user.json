@@ -1,0 +1,73 @@
+[
+  {
+    "id": 1,
+    "name": "Bodich",
+    "role": "Front-End",
+    "rating": 900,
+    "studyTimes": 1320,
+    "taskCompleted": 1120,
+    "iconRating": "https://imgur.com/2ntrT0c.png",
+    "awards": {
+      "html": {
+        "icon": "https://imgur.com/WasM7ZN.png",
+        "point": 400
+      },
+      "js": {
+        "icon": "https://imgur.com/WjuaQjE.png",
+        "point": 1000
+      },
+      "redux": {
+        "icon": "https://imgur.com/GhF8a6p.png",
+        "point": 600
+      },
+      "next": {
+        "icon": "https://imgur.com/QrMzB16.png",
+        "point": 700
+      }
+    },
+    "tasks": [
+      {
+        "id": 1,
+        "name": "Сверстать сайт",
+        "points": 100,
+        "type": "Верстка",
+        "difficulty": "Easy layout"
+      },
+      {
+        "id": 2,
+        "name": "Разработать приложение",
+        "points": 200,
+        "type": "Приложение",
+        "difficulty": "Easy layout"
+      },
+      {
+        "id": 1,
+        "name": "Сверстать сайт",
+        "points": 100,
+        "type": "Верстка",
+        "difficulty": "Easy layout"
+      },
+      {
+        "id": 2,
+        "name": "Разработать приложение",
+        "points": 200,
+        "type": "Приложение",
+        "difficulty": "Easy layout"
+      },
+      {
+        "id": 1,
+        "name": "Сверстать сайт",
+        "points": 100,
+        "type": "Верстка",
+        "difficulty": "Easy layout"
+      },
+      {
+        "id": 2,
+        "name": "Разработать приложение",
+        "points": 200,
+        "type": "Приложение",
+        "difficulty": "Easy layout"
+      }
+    ]
+  }
+]
