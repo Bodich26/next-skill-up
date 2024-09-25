@@ -9,35 +9,60 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  addTask,
+  setTaskDifficulty,
+  setTaskName,
+} from "../../redux/slices/tasksSlice";
 
 interface Props {
   className?: string;
 }
 
 export const TasksForm: React.FC<Props> = ({ className }) => {
-  const [taskName, setTaskName] = React.useState<string>("");
-  const [selectDifficulty, setSelectDifficulty] = React.useState<string>("");
+  const { taskName, taskDifficulty } = useSelector(
+    (state: any) => state.tasks.form
+  );
+  const dispatch = useDispatch();
 
   const { handleResetFilters } = useResetFilter([
-    setTaskName,
-    setSelectDifficulty,
+    () => dispatch(setTaskName("")),
+    () => dispatch(setTaskDifficulty("")),
   ]);
 
-  const handleNameTask = (e: any) => {
-    setTaskName(e.target.value);
+  const handleNameTask = (e: React.ChangeEvent<HTMLInputElement>) => {
+    dispatch(setTaskName(e.target.value));
+  };
+
+  const handleDifficultyChange = (value: string) => {
+    dispatch(setTaskDifficulty(value));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (taskName && taskDifficulty) {
+      handleResetFilters();
+      dispatch(addTask());
+    }
   };
 
   return (
     <div className="basis-[25%] border-[1px] border-solid border-input bg-card rounded-lg p-4">
       <h3 className="font-bold text-3xl text-center mb-6">Create a Tasks</h3>
-      <div className="flex flex-col gap-5 justify-center m-auto max-w-[250px]">
+
+      <form
+        onSubmit={handleSubmit}
+        className="flex flex-col gap-5 justify-center m-auto max-w-[250px]"
+      >
         <Input
           value={taskName}
           onChange={(e) => handleNameTask(e)}
           placeholder="Enter the task name"
           className="max-w-[100%]"
         />
-        <Select value={selectDifficulty} onValueChange={setSelectDifficulty}>
+        <Select value={taskDifficulty} onValueChange={handleDifficultyChange}>
           <SelectTrigger className="max-w-[100%]">
             <SelectValue placeholder="select task type" />
           </SelectTrigger>
@@ -61,20 +86,25 @@ export const TasksForm: React.FC<Props> = ({ className }) => {
             <SelectItem value="Learning">Learning</SelectItem>
           </SelectContent>
         </Select>
-        {(taskName || selectDifficulty) && (
+        {(taskName || taskDifficulty) && (
           <Button
             variant="secondary"
             size="lg"
             className="text-lg h-9 inline"
             onClick={handleResetFilters}
           >
-            Cancel
+            Reset
           </Button>
         )}
-        <Button variant="default" size="lg" className="text-lg h-9">
-          Complete
+        <Button
+          type="submit"
+          variant="default"
+          size="lg"
+          className="text-lg h-9"
+        >
+          Add Task
         </Button>
-      </div>
+      </form>
     </div>
   );
 };
