@@ -12,6 +12,7 @@ interface Task {
   name: string;
   difficulty: Difficulty;
   points: number;
+  completed: boolean;
 }
 
 interface TasksState {
@@ -20,17 +21,13 @@ interface TasksState {
 }
 
 const difficultyPointsRange: Record<Difficulty, [number, number]> = {
-  "Easy layout": [1, 3],
-  "Medium layout": [2, 5],
-  "Hard layout": [3, 7],
-  "Easy App": [1, 3],
-  "Medium App": [2, 5],
-  "Hard App": [3, 7],
-  "Landing page Design": [2, 4],
-  "Easy app Design": [1, 3],
-  "Medium app Design": [2, 5],
-  "Hard app Design": [3, 7],
-  "Learning info": [1, 2],
+  "Easy layout": [420, 515],
+  "Medium layout": [616, 760],
+  "Hard layout": [780, 922],
+  "Easy App": [1140, 1460],
+  "Medium App": [1550, 1890],
+  "Hard App": [2100, 2830],
+  "Learning info": [430, 620],
 };
 
 const getRandomPoints = (range: [number, number]): number => {
@@ -72,6 +69,7 @@ const tasksSlice = createSlice({
           name: taskName,
           difficulty: taskDifficulty as Difficulty,
           points,
+          completed: false,
         };
 
         state.tasks.push(newTask);
@@ -83,9 +81,21 @@ const tasksSlice = createSlice({
     deleteTask(state, action: PayloadAction<string>) {
       state.tasks = state.tasks.filter((task) => task.id !== action.payload);
     },
+
+    completedTask(state, action: PayloadAction<string>) {
+      const task = state.tasks.find((task) => task.id === action.payload);
+      if (task) {
+        task.completed = true;
+      }
+    },
   },
 });
 
-export const { setTaskName, setTaskDifficulty, addTask, deleteTask } =
-  tasksSlice.actions;
+export const {
+  setTaskName,
+  setTaskDifficulty,
+  addTask,
+  deleteTask,
+  completedTask,
+} = tasksSlice.actions;
 export default tasksSlice.reducer;

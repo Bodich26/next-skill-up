@@ -10,7 +10,8 @@ import { UserType } from "@/type";
 import UserData from "@/data/user.json";
 import { useFilterName } from "@/hooks";
 import { RootState } from "@/redux/store";
-import { deleteTask } from "@/redux/slices/tasksSlice";
+import { completedTask, deleteTask } from "@/redux/slices/tasksSlice";
+import { cn } from "@/lib/utils";
 
 // const user: UserType[] = UserData;
 // const tasksUser = user[0].tasks;
@@ -25,6 +26,10 @@ export const TasksList: React.FC<Props> = () => {
 
   const handleDeleteTask = (id: string) => {
     dispatch(deleteTask(id));
+  };
+
+  const handleCompleteTask = (id: string) => {
+    dispatch(completedTask(id));
   };
 
   return (
@@ -55,6 +60,8 @@ export const TasksList: React.FC<Props> = () => {
                 taskPoints={task.points}
                 taskDifficulty={task.difficulty}
                 deleteTask={() => handleDeleteTask(task.id)}
+                completeTask={() => handleCompleteTask(task.id)}
+                className={cn({ "line-through": task.completed })}
               />
             ))
         )}

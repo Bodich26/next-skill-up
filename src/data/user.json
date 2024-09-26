@@ -27,45 +27,10 @@
     },
     "tasks": [
       {
-        "id": 1,
+        "id": "1",
         "name": "Сверстать сайт",
         "points": 100,
         "type": "Верстка",
-        "difficulty": "Easy layout"
-      },
-      {
-        "id": 2,
-        "name": "Разработать приложение",
-        "points": 200,
-        "type": "Приложение",
-        "difficulty": "Easy layout"
-      },
-      {
-        "id": 1,
-        "name": "Сверстать сайт",
-        "points": 100,
-        "type": "Верстка",
-        "difficulty": "Easy layout"
-      },
-      {
-        "id": 2,
-        "name": "Разработать приложение",
-        "points": 200,
-        "type": "Приложение",
-        "difficulty": "Easy layout"
-      },
-      {
-        "id": 1,
-        "name": "Сверстать сайт",
-        "points": 100,
-        "type": "Верстка",
-        "difficulty": "Easy layout"
-      },
-      {
-        "id": 2,
-        "name": "Разработать приложение",
-        "points": 200,
-        "type": "Приложение",
         "difficulty": "Easy layout"
       }
     ]

@@ -16,7 +16,7 @@ export type UserType = {
 };
 
 export type TaskType = {
-  id: number;
+  id: string;
   name: string;
   points: number;
   type: string;
@@ -27,9 +27,5 @@ export type TaskType = {
     | "Easy app"
     | "Medium app"
     | "Hard app"
-    | "Landing page Design"
-    | "Easy app Design"
-    | "Medium app Design"
-    | "Hard app Design"
     | "Learning info";
 };

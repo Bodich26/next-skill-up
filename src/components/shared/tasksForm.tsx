@@ -1,6 +1,13 @@
 "use client";
 
 import React from "react";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  addTask,
+  setTaskDifficulty,
+  setTaskName,
+} from "../../redux/slices/tasksSlice";
+
 import { useResetFilter } from "@/hooks";
 import { Button, Input, Select } from "../ui";
 import {
@@ -9,13 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { useSelector, useDispatch } from "react-redux";
-import {
-  addTask,
-  setTaskDifficulty,
-  setTaskName,
-} from "../../redux/slices/tasksSlice";
-import { object } from "zod";
+
 import { Difficulty } from "@/type";
 
 interface Props {
@@ -81,13 +82,6 @@ export const TasksForm: React.FC<Props> = ({ className }) => {
             <SelectItem value="Easy App">Easy App</SelectItem>
             <SelectItem value="Medium App">Medium App</SelectItem>
             <SelectItem value="Hard App">Hard App</SelectItem>
-            <span className="ml-2 text-primary">Design</span>
-            <SelectItem value="Landing page Design">
-              Landing page Design
-            </SelectItem>
-            <SelectItem value="Easy app Design">Easy app Design</SelectItem>
-            <SelectItem value="Medium app Design">Medium app Design</SelectItem>
-            <SelectItem value="Hard app Design">Hard app Design</SelectItem>
             <span className="ml-2 text-primary">Learning</span>
             <SelectItem value="Learning info">Learning info</SelectItem>
           </SelectContent>
