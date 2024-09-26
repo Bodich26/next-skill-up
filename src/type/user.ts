@@ -30,5 +30,6 @@ export type TaskType = {
     | "Landing page Design"
     | "Easy app Design"
     | "Medium app Design"
-    | "Hard app Design";
+    | "Hard app Design"
+    | "Learning info";
 };

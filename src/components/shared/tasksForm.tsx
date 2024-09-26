@@ -15,6 +15,8 @@ import {
   setTaskDifficulty,
   setTaskName,
 } from "../../redux/slices/tasksSlice";
+import { object } from "zod";
+import { Difficulty } from "@/type";
 
 interface Props {
   className?: string;
@@ -36,15 +38,19 @@ export const TasksForm: React.FC<Props> = ({ className }) => {
   };
 
   const handleDifficultyChange = (value: string) => {
-    dispatch(setTaskDifficulty(value));
+    dispatch(setTaskDifficulty(value as Difficulty));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     if (taskName && taskDifficulty) {
+      const newTask = {
+        taskName,
+        taskDifficulty,
+      };
       handleResetFilters();
-      dispatch(addTask());
+      dispatch(addTask(newTask));
     }
   };
 
@@ -83,7 +89,7 @@ export const TasksForm: React.FC<Props> = ({ className }) => {
             <SelectItem value="Medium app Design">Medium app Design</SelectItem>
             <SelectItem value="Hard app Design">Hard app Design</SelectItem>
             <span className="ml-2 text-primary">Learning</span>
-            <SelectItem value="Learning">Learning</SelectItem>
+            <SelectItem value="Learning info">Learning info</SelectItem>
           </SelectContent>
         </Select>
         {(taskName || taskDifficulty) && (

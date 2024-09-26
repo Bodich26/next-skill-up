@@ -4,14 +4,16 @@ import { Button } from "../ui";
 
 interface Props {
   taskName: string;
-  taskPoints: number;
-  taskType: string;
+  taskPoints?: number;
+  taskDifficulty: string;
+  deleteTask: () => void;
 }
 
 export const TaskItem: React.FC<Props> = ({
   taskName,
   taskPoints,
-  taskType,
+  taskDifficulty,
+  deleteTask,
 }) => {
   return (
     <div className="flex justify-between border-[1px] border-solid border-input bg-card rounded-lg p-4 w-[100%]">
@@ -29,14 +31,19 @@ export const TaskItem: React.FC<Props> = ({
         <dl className="flex items-center gap-2">
           <Settings className="text-primary" />
           <dt>Task type:</dt>
-          <dd className="font-bold text-base">{taskType}</dd>
+          <dd className="font-bold text-base">{taskDifficulty}</dd>
         </dl>
       </div>
       <div className="flex flex-col gap-4">
         <Button variant="default" size="lg" className="text-lg h-9">
           Complete
         </Button>
-        <Button variant="secondary" size="lg" className="text-lg h-9">
+        <Button
+          onClick={deleteTask}
+          variant="secondary"
+          size="lg"
+          className="text-lg h-9"
+        >
           Delete
         </Button>
       </div>

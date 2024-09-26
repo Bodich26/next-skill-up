@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Search } from "lucide-react";
 import { Input } from "../ui";
 import { TaskItem } from "./taskItem";
@@ -8,13 +9,23 @@ import { UserType } from "@/type";
 
 import UserData from "@/data/user.json";
 import { useFilterName } from "@/hooks";
-const user: UserType[] = UserData;
-const tasksUser = user[0].tasks;
+import { RootState } from "@/redux/store";
+import { deleteTask } from "@/redux/slices/tasksSlice";
+
+// const user: UserType[] = UserData;
+// const tasksUser = user[0].tasks;
 
 interface Props {}
 
 export const TasksList: React.FC<Props> = () => {
   const { filterName, setFilterName, handleFilterName } = useFilterName("");
+  const tasks = useSelector((state: RootState) => state.tasks.tasks);
+
+  const dispatch = useDispatch();
+
+  const handleDeleteTask = (id: string) => {
+    dispatch(deleteTask(id));
+  };
 
   return (
     <div className="basis-[75%] border-[1px] border-solid border-input bg-card row-span-2 rounded-lg p-4">
@@ -31,18 +42,19 @@ export const TasksList: React.FC<Props> = () => {
         </div>
       </div>
       <div className="flex flex-col gap-3 overflow-y-auto min-h-[700px] max-h-[700px] mt-7">
-        {tasksUser.length === 0 ? (
+        {tasks.length === 0 ? (
           // eslint-disable-next-line react/no-unescaped-entities
-          <p className="text-center text-xl">You don't have any tasks</p>
+          <p className="text-center text-xl">You don't have any tasks 😞</p>
         ) : (
-          tasksUser
+          tasks
             .filter((task) => task.name.toLowerCase().includes(filterName))
-            .map((task, index) => (
+            .map((task) => (
               <TaskItem
-                key={index}
+                key={task.id}
                 taskName={task.name}
                 taskPoints={task.points}
-                taskType={task.type}
+                taskDifficulty={task.difficulty}
+                deleteTask={() => handleDeleteTask(task.id)}
               />
             ))
         )}
