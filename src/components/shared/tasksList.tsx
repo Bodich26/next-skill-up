@@ -62,6 +62,7 @@ export const TasksList: React.FC<Props> = () => {
                 deleteTask={() => handleDeleteTask(task.id)}
                 completeTask={() => handleCompleteTask(task.id)}
                 className={cn({ "line-through": task.completed })}
+                classBtnComplete={cn({ hidden: task.completed })}
               />
             ))
         )}

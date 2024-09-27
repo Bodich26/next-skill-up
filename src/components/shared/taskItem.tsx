@@ -10,6 +10,7 @@ interface Props {
   deleteTask: () => void;
   completeTask: () => void;
   className?: string;
+  classBtnComplete?: string;
 }
 
 export const TaskItem: React.FC<Props> = ({
@@ -19,6 +20,7 @@ export const TaskItem: React.FC<Props> = ({
   deleteTask,
   completeTask,
   className,
+  classBtnComplete,
 }) => {
   return (
     <div
@@ -49,7 +51,7 @@ export const TaskItem: React.FC<Props> = ({
           onClick={completeTask}
           variant="default"
           size="lg"
-          className="text-lg h-9"
+          className={cn("text-lg h-9", classBtnComplete)}
         >
           Complete
         </Button>
