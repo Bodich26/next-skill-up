@@ -1,0 +1,55 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("POSTGRES_URL")
+    directUrl = env("POSTGRES_URL_NON_POOLING")
+}
+
+model User {
+    id Int @id @default(autoincrement())
+
+    name String
+    email String @unique
+    password String
+
+    role String
+    rating Int
+    studyTimes Int
+    taskCompleted Int
+    iconRating String
+    tasks Task[]
+    awards Award[]
+
+    createAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+model Task {
+    id Int @id @default(autoincrement())
+
+    name String
+    points Int
+    type String
+    difficulty String
+
+    user User @relation(fields: [userId], references: [id])
+    userId Int
+
+    createAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model Award {
+    id Int @id @default(autoincrement())
+    name String
+    icon String
+    points Int
+
+    user User @relation(fields: [userId], references: [id])
+    userId Int
+
+    createAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
