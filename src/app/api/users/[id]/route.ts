@@ -1,0 +1,28 @@
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "../../../../../prisma/prisma-client";
+
+export async function GET(req: NextRequest) {
+  const { pathname } = new URL(req.url);
+  const id = pathname.split("/").pop();
+
+  if (id) {
+    const user = await prisma.user.findUnique({
+      where: { id: Number(id) },
+    });
+
+    if (!user) {
+      return NextResponse.json({ message: "User not found" }, { status: 404 });
+    }
+    return NextResponse.json(user);
+  }
+  return NextResponse.json({ message: "User ID is required" }, { status: 400 });
+}
+
+export async function POST(req: NextRequest) {
+  const data = await req.json();
+  const user = await prisma.user.create({
+    data,
+  });
+
+  return NextResponse.json(user);
+}

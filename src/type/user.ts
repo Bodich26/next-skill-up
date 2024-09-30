@@ -1,18 +1,13 @@
 export type UserType = {
   id: number;
   name: string;
+  email: string;
+  password: string;
   role: string;
   rating: number;
   studyTimes: number;
   taskCompleted: number;
   iconRating: string;
-  awards: {
-    [key: string]: {
-      icon: string;
-      point: number;
-    };
-  };
-  tasks: TaskType[];
 };
 
 export type TaskType = {
