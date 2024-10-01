@@ -6,7 +6,7 @@ import { Api } from "../../../services/api-client";
 
 export default function DisplayUser() {
   const [userId, setUserId] = React.useState<number>(1);
-  const [user, setUser] = React.useState<UserType | null>(null);
+  const [user, setUser] = React.useState<UserType | undefined>(undefined);
 
   useEffect(() => {
     const fetchUser = async (id: number) => {
