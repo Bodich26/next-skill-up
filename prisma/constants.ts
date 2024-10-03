@@ -97,4 +97,12 @@ export const rewards: Prisma.RewardCreateManyInput[] = [
     points: 650,
     role: "FRONT_END",
   },
+  {
+    name: "Python",
+    icon: "https://imgur.com/wyQH1qJ.png",
+    description:
+      "Python — это мощный и универсальный язык программирования, который позволяет создавать самые разные приложения. Знание Python существенно расширяет возможности ваших проектов.",
+    points: 1360,
+    role: "BACK_END",
+  },
 ];

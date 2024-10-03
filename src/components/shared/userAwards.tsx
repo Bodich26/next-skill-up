@@ -1,40 +1,61 @@
 "use client";
 
-import React from "react";
-import { UserType, SkillsType } from "@/type";
+import React, { useEffect } from "react";
+import { Api } from "../../../services/api-client";
+import { RewardsType, UserType } from "@/type";
 import Image from "next/image";
-import { AddAwardPopUp } from "../ui";
 
-import UserData from "../../data/user.json";
-import SkillsData from "../../data/skills.json";
-const User: UserType[] = UserData;
-const skills: SkillsType[] = SkillsData;
+interface IUsers {
+  user: UserType | null;
+}
 
-export default function UserAwards() {
-  const handleAwardPopUp = () => {};
+export default function UserAwards({ user }: IUsers) {
+  const [rewards, setRewards] = React.useState<RewardsType[]>([]);
+  const [loading, setLoading] = React.useState<boolean>(true);
+  const [error, setError] = React.useState<string>("");
 
-  const user = User[0];
+  useEffect(() => {
+    const fetchRewards = async () => {
+      if (!user) return;
+      try {
+        setLoading(true);
+        const rewardsData = await Api.rewards.reward();
+        setRewards(rewardsData);
+      } catch (error: any) {
+        setError(error.message);
+        console.error("Error fetching rewards:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRewards();
+  }, [user]);
+
+  const filteredRewards = rewards.filter(
+    (reward) => reward.role === user?.role
+  );
+
   return (
     <div className="flex flex-row flex-wrap justify-center items-start gap-6 overflow-y-auto max-h-[425px]">
-      {Object.keys(skills[0]).map((skill) => {
-        const award = user.awards[skill as keyof typeof user.awards];
-        const skillData = skills[0][skill as keyof (typeof skills)[0]];
-
-        return award ? (
-          <div key={skill} className="w-[128px] h-[128px] ">
-            <Image src={award.icon} width={128} height={128} alt="IconAward" />
+      {loading ? (
+        <p>Loading rewards...</p>
+      ) : error ? (
+        <p>Error loading rewards: {error}</p>
+      ) : filteredRewards.length > 0 ? (
+        filteredRewards.map((reward) => (
+          <div key={reward.id} className="w-[128px] h-[128px]">
+            <Image
+              src={reward.icon}
+              width={128}
+              height={128}
+              alt={reward.name}
+            />
           </div>
-        ) : (
-          <AddAwardPopUp
-            key={skill}
-            point={skillData.point}
-            nameAward={skillData.name}
-            descAward={skillData.desc}
-            imgAward={skillData.icon}
-            onClick={() => handleAwardPopUp()}
-          />
-        );
-      })}
+        ))
+      ) : (
+        <p>No rewards available for your role.</p>
+      )}
     </div>
   );
 }

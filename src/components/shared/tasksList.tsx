@@ -46,7 +46,7 @@ export const TasksList: React.FC<Props> = () => {
           />
         </div>
       </div>
-      <div className="flex flex-col gap-3 overflow-y-auto min-h-[700px] max-h-[700px] mt-7">
+      <div className="flex flex-col gap-3 overflow-y-auto min-h-[704px] max-h-[704px] mt-7">
         {tasks.length === 0 ? (
           // eslint-disable-next-line react/no-unescaped-entities
           <p className="text-center text-xl">You don't have any tasks 😞</p>
