@@ -10,7 +10,7 @@ interface IUsers {
 
 export default function DisplayUser({ user }: IUsers) {
   return (
-    <div className="space-y-4">
+    <div>
       <div className="border-[1px] border-solid border-input bg-card flex gap-9 items-start p-4 rounded-lg min-h-[258px]">
         <Image
           src={user?.iconRating || ""}

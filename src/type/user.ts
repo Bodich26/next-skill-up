@@ -8,7 +8,15 @@ export type UserType = {
   studyTimes: number;
   taskCompleted: number;
   iconRating: string;
+  tasks: TaskType[];
+  awards: UserAwardType[];
 };
+
+export interface UserAwardType {
+  id: number;
+  userId: number;
+  rewardId: number;
+}
 
 export type TaskType = {
   id: string;
