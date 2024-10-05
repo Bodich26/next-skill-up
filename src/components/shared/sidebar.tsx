@@ -43,25 +43,23 @@ export const Sidebar: React.FC<Props> = ({ className }) => {
         <Image src={Logo} width={132} height={54} alt="Logo" />
       </Link>
       <ul>
-        {menuItem.map((item) => {
-          return (
-            <li key={item.title} className="flex flex-col gap-y-5">
-              {item.list.map((link) => (
-                <Link
-                  key={item.title}
-                  href={link.path}
-                  className={cn(
-                    "flex gap-4 p-2 border-[1px] border-solid border-input bg-input rounded-lg w-[195px] hover:bg-primary transition-bg duration-300 ease-in-out",
-                    pathName === link.path && "bg-primary"
-                  )}
-                >
-                  {link.icon}
-                  {link.title}
-                </Link>
-              ))}
-            </li>
-          );
-        })}
+        {menuItem.map((item, index) => (
+          <li key={index} className="flex flex-col gap-y-5">
+            {item.list.map((link, index) => (
+              <Link
+                key={index}
+                href={link.path}
+                className={cn(
+                  "flex gap-4 p-2 border-[1px] border-solid border-input bg-input rounded-lg w-[195px] hover:bg-primary transition-bg duration-300 ease-in-out",
+                  pathName === link.path && "bg-primary"
+                )}
+              >
+                {link.icon}
+                {link.title}
+              </Link>
+            ))}
+          </li>
+        ))}
       </ul>
     </div>
   );

@@ -38,7 +38,7 @@ export default function UserAwards({ user }: IUsers) {
     (award: UserAwardType) => award.rewardId
   );
 
-  const handleAwardPopUp = () => {};
+  const handleAwardPopUp = (reward: RewardsType) => {};
 
   return (
     <div className="border-[1px] p-4 border-solid border-input bg-card rounded-lg">
@@ -65,7 +65,7 @@ export default function UserAwards({ user }: IUsers) {
                   nameAward={reward.name}
                   descAward={reward.description}
                   imgAward={reward.icon}
-                  onClick={() => handleAwardPopUp()}
+                  onClick={() => handleAwardPopUp(reward)}
                 />
               );
             }
