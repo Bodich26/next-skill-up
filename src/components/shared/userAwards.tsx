@@ -1,38 +1,36 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { Api } from "../../../services/api-client";
 import { RewardsType, UserType } from "@/type";
 import Image from "next/image";
 import { AddAwardPopUp } from "../ui";
 import { UserAwardType } from "@/type/user";
+import { useAppDispatch } from "@/redux/hooks/useAppDispatch";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
+import { fetchReward } from "@/redux/slices/rewardSlice";
 
 interface IUsers {
   user: UserType | null;
 }
 
 export default function UserAwards({ user }: IUsers) {
-  const [rewards, setRewards] = React.useState<RewardsType[]>([]);
-  const [error, setError] = React.useState<string>("");
+  const dispatch = useAppDispatch();
+  const {
+    data: reward,
+    status,
+    error,
+  } = useSelector((state: RootState) => state.reward);
 
   useEffect(() => {
-    const fetchRewards = async () => {
-      if (!user) return;
-      try {
-        const rewardsData = await Api.rewards.reward();
-        setRewards(rewardsData);
-      } catch (error: any) {
-        setError(error.message);
-        console.error("Error fetching rewards:", error);
-      }
-    };
+    if (status === "idle") {
+      dispatch(fetchReward());
+    }
+  }, [dispatch, status]);
 
-    fetchRewards();
-  }, [user]);
-
-  const filteredRewards = rewards.filter(
-    (reward) => reward.role === user?.role
-  );
+  const filteredRewards = reward
+    ? reward.filter((r) => r.role === user?.role)
+    : [];
 
   const obtainedRewardIds = (user?.awards || []).map(
     (award: UserAwardType) => award.rewardId
@@ -65,7 +63,7 @@ export default function UserAwards({ user }: IUsers) {
                   nameAward={reward.name}
                   descAward={reward.description}
                   imgAward={reward.icon}
-                  onClick={() => handleAwardPopUp(reward)}
+                  onClick={() => console.log()}
                 />
               );
             }

@@ -3,8 +3,8 @@ import { Api } from "../../../services/api-client";
 import { Role } from "@prisma/client";
 
 interface Reward {
-  name: string;
   id: number;
+  name: string;
   icon: string;
   description: string;
   points: number;
@@ -12,12 +12,12 @@ interface Reward {
 }
 
 interface IInitial {
-  data: Reward | null;
+  data: Reward[] | null;
   status: "idle" | "loading" | "succeeded" | "failed";
   error: string | null;
 }
 
-export const fetchReward = createAsyncThunk<Reward>(
+export const fetchReward = createAsyncThunk<Reward[]>(
   "reward/fetchReward",
   async () => {
     const response = await Api.rewards.reward();
@@ -42,7 +42,7 @@ const rewardSlice = createSlice({
       })
       .addCase(
         fetchReward.fulfilled,
-        (state, action: PayloadAction<Reward>) => {
+        (state, action: PayloadAction<Reward[]>) => {
           state.status = "succeeded";
           state.data = action.payload;
         }
