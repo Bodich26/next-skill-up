@@ -20,7 +20,7 @@ interface IInitial {
 export const fetchReward = createAsyncThunk<Reward[]>(
   "reward/fetchReward",
   async () => {
-    const response = await Api.rewards.reward();
+    const response = await Api.rewards.getListRewards();
     return response;
   }
 );

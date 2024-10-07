@@ -27,6 +27,14 @@ export const fetchUser = createAsyncThunk(
   }
 );
 
+export const assignRewardToUser = createAsyncThunk(
+  "reward/addRewardToUser",
+  async ({ userId, rewardId }: { userId: number; rewardId: number }) => {
+    const response = await Api.rewards.addRewardToUser(userId, rewardId);
+    return response;
+  }
+);
+
 const initialState: IInitial = {
   data: null,
   status: "idle",
