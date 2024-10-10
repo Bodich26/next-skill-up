@@ -1,14 +1,15 @@
 "use client";
-
 import React, { useEffect } from "react";
-import { RewardsType, UserType } from "@/type";
+
+import { UserType } from "@/type";
 import Image from "next/image";
 import { AddAwardPopUp } from "../ui";
-import { UserAwardType } from "@/type/user";
 import { useAppDispatch } from "@/redux/hooks/useAppDispatch";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { fetchReward } from "@/redux/slices/rewardSlice";
+import { assignRewardToUser, fetchUser } from "@/redux/slices/userSlice";
+import { UserReward } from "@prisma/client";
 
 interface IUsers {
   user: UserType | null;
@@ -16,11 +17,10 @@ interface IUsers {
 
 export default function UserAwards({ user }: IUsers) {
   const dispatch = useAppDispatch();
-  const {
-    data: reward,
-    status,
-    error,
-  } = useSelector((state: RootState) => state.reward);
+
+  const { data: reward, status } = useSelector(
+    (state: RootState) => state.reward
+  );
 
   useEffect(() => {
     if (status === "idle") {
@@ -28,15 +28,27 @@ export default function UserAwards({ user }: IUsers) {
     }
   }, [dispatch, status]);
 
+  const obtainedRewardIds =
+    user?.awards?.map((userReward: UserReward) => userReward.rewardId) || [];
+
   const filteredRewards = reward
     ? reward.filter((r) => r.role === user?.role)
     : [];
 
-  const obtainedRewardIds = (user?.awards || []).map(
-    (award: UserAwardType) => award.rewardId
-  );
-
-  const handleAwardPopUp = (reward: RewardsType) => {};
+  const handleAwardPopUp = async (userId: number, rewardId: number) => {
+    try {
+      const resultAction = await dispatch(
+        assignRewardToUser({ userId, rewardId })
+      );
+      if (assignRewardToUser.fulfilled.match(resultAction)) {
+        console.log("Reward added successfully!", resultAction.payload);
+      } else {
+        console.error("Failed to add reward:", resultAction.error);
+      }
+    } catch (error) {
+      console.error("Error adding reward:", error);
+    }
+  };
 
   return (
     <div className="border-[1px] p-4 border-solid border-input bg-card rounded-lg">
@@ -44,7 +56,9 @@ export default function UserAwards({ user }: IUsers) {
       <div className="max-h-[434px] min-h-[434px]">
         <div className="flex flex-row flex-wrap justify-start gap-6 overflow-y-auto max-h-[434px]">
           {filteredRewards.map((reward) => {
-            if (obtainedRewardIds.includes(reward.id)) {
+            const isRewardObtained = obtainedRewardIds.includes(reward.id);
+
+            if (isRewardObtained) {
               return (
                 <div key={reward.id} className="w-[128px] h-[128px]">
                   <Image
@@ -63,7 +77,7 @@ export default function UserAwards({ user }: IUsers) {
                   nameAward={reward.name}
                   descAward={reward.description}
                   imgAward={reward.icon}
-                  onClick={() => console.log()}
+                  onClick={() => handleAwardPopUp(user!.id, reward.id)}
                 />
               );
             }

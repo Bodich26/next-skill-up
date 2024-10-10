@@ -32,18 +32,12 @@ export const AddAwardPopUp: React.FC<Props> = ({
     <div className={className}>
       <Dialog>
         <DialogTrigger>
-          {
-            <PlusItemBox
-              onClick={onClick}
-              nameAward={nameAward}
-              point={point}
-            />
-          }
+          {<PlusItemBox nameAward={nameAward} point={point} />}
         </DialogTrigger>
         <DialogContent className="flex justify-between max-w-[699px] min-h-[270px]">
           <div className="flex flex-col">
             <Image src={imgAward} width={149} height={149} alt="IconAward" />
-            <Button className=" mt-[30px]" type="submit">
+            <Button className=" mt-[30px]" type="submit" onClick={onClick}>
               Receive
             </Button>
           </div>

@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "../../../../../prisma/prisma-client";
 
-export async function GET(req: NextRequest) {
-  const { pathname } = new URL(req.url);
-  const id = pathname.split("/").pop();
+export async function GET(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  const { id } = params;
 
   if (id) {
     const user = await prisma.user.findUnique({

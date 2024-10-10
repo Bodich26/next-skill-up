@@ -12,6 +12,9 @@ export const getListRewards = async () => {
 };
 
 export const addRewardToUser = async (userId: number, rewardId: number) => {
-  const { data } = await axiosInstance.post("/reward", { rewardId });
+  const { data } = await axiosInstance.post(`/reward`, {
+    userId,
+    rewardId,
+  });
   return data;
 };

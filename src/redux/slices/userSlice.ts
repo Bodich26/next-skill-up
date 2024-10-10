@@ -1,17 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { Api } from "../../../services/api-client";
-
-interface User {
-  id: number;
-  name: string;
-  email: string;
-  password: string;
-  role: string;
-  rating: number;
-  studyTimes: number;
-  taskCompleted: number;
-  iconRating: string;
-}
+import { User } from "@/type/user";
 
 interface IInitial {
   data: User | null;
@@ -31,7 +20,7 @@ export const assignRewardToUser = createAsyncThunk(
   "reward/addRewardToUser",
   async ({ userId, rewardId }: { userId: number; rewardId: number }) => {
     const response = await Api.rewards.addRewardToUser(userId, rewardId);
-    return response;
+    return response.user;
   }
 );
 
@@ -55,6 +44,23 @@ const userSlice = createSlice({
         state.data = action.payload;
       })
       .addCase(fetchUser.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.error.message || "Error";
+      })
+
+      .addCase(assignRewardToUser.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(
+        assignRewardToUser.fulfilled,
+        (state, action: PayloadAction<User>) => {
+          state.status = "succeeded";
+          if (state.data) {
+            state.data.awards = action.payload.awards;
+          }
+        }
+      )
+      .addCase(assignRewardToUser.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message || "Error";
       });

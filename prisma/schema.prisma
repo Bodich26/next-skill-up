@@ -16,18 +16,17 @@ enum Role {
 }
 
 model User {
-  id            Int    @id @default(autoincrement())
+  id            Int        @id @default(autoincrement())
   name          String
-  email         String @unique
+  email         String     @unique
   password      String
-
   role          Role
   rating        Int
   studyTimes    Int
   taskCompleted Int
   iconRating    String
   tasks         Task[]
-
+  
   awards        UserReward[]
   leaderboard   Leaderboard[]
 
