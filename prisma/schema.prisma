@@ -59,10 +59,11 @@ model Reward {
 
 model Task {
   id           Int    @id @default(autoincrement())
+  idTask       String @unique
   name         String
   points       Int    
-  type         String
   difficulty   String
+  completed    Boolean @default(false)
 
   user         User   @relation(fields: [userId], references: [id])
   userId       Int

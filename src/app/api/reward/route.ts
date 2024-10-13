@@ -75,7 +75,6 @@ export async function POST(req: Request) {
       icon: userReward.reward.icon,
       description: userReward.reward.description,
       points: userReward.reward.points,
-      role: userReward.reward.role,
     }));
 
     return NextResponse.json(

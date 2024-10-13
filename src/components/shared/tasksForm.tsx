@@ -1,11 +1,12 @@
 "use client";
 
-import React from "react";
-import { useSelector, useDispatch } from "react-redux";
+import React, { useEffect } from "react";
+import { useSelector } from "react-redux";
 import {
-  addTask,
   setTaskDifficulty,
   setTaskName,
+  addNewTaskToUser,
+  fetchTasksList,
 } from "../../redux/slices/tasksSlice";
 
 import { useResetFilter } from "@/hooks";
@@ -18,16 +19,18 @@ import {
 } from "../ui/select";
 
 import { Difficulty } from "@/type";
+import { useAppDispatch } from "@/redux/hooks/useAppDispatch";
 
 interface Props {
   className?: string;
 }
 
 export const TasksForm: React.FC<Props> = ({ className }) => {
+  const dispatch = useAppDispatch();
+
   const { taskName, taskDifficulty } = useSelector(
     (state: any) => state.tasks.form
   );
-  const dispatch = useDispatch();
 
   const { handleResetFilters } = useResetFilter([
     () => dispatch(setTaskName("")),
@@ -46,12 +49,16 @@ export const TasksForm: React.FC<Props> = ({ className }) => {
     e.preventDefault();
 
     if (taskName && taskDifficulty) {
+      const userId = 1;
       const newTask = {
-        taskName,
-        taskDifficulty,
+        userId,
+        name: taskName,
+        difficulty: taskDifficulty,
+        completed: false,
       };
+      console.log("Adding new task:", newTask);
       handleResetFilters();
-      dispatch(addTask(newTask));
+      dispatch(addNewTaskToUser(newTask));
     }
   };
 

@@ -11,8 +11,14 @@ interface IInitial {
 export const fetchUser = createAsyncThunk(
   "user/fetchUser",
   async (userId: number) => {
-    const response = await Api.users.user(userId);
-    return response;
+    try {
+      const response = await Api.users.user(userId);
+      console.log("User from server:", response);
+      return response;
+    } catch (error) {
+      console.log("Error fetching users:", error);
+      throw error;
+    }
   }
 );
 
@@ -41,7 +47,10 @@ const userSlice = createSlice({
       })
       .addCase(fetchUser.fulfilled, (state, action: PayloadAction<User>) => {
         state.status = "succeeded";
-        state.data = action.payload;
+        state.data = {
+          ...action.payload,
+          awards: action.payload.awards || [],
+        };
       })
       .addCase(fetchUser.rejected, (state, action) => {
         state.status = "failed";
@@ -55,9 +64,7 @@ const userSlice = createSlice({
         assignRewardToUser.fulfilled,
         (state, action: PayloadAction<User>) => {
           state.status = "succeeded";
-          if (state.data) {
-            state.data.awards = action.payload.awards;
-          }
+          state!.data!.awards = action.payload.awards;
         }
       )
       .addCase(assignRewardToUser.rejected, (state, action) => {

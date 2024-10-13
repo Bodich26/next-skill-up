@@ -1,28 +1,30 @@
 "use client";
-
-import React from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useEffect } from "react";
+import { useAppDispatch } from "@/redux/hooks/useAppDispatch";
+import { useSelector } from "react-redux";
 import { Search } from "lucide-react";
 import { Input } from "../ui";
 import { TaskItem } from "./taskItem";
-import { UserType } from "@/type";
 
-import UserData from "@/data/user.json";
 import { useFilterName } from "@/hooks";
 import { RootState } from "@/redux/store";
-import { completedTask, deleteTask } from "@/redux/slices/tasksSlice";
+import {
+  completedTask,
+  deleteTask,
+  fetchTasksList,
+} from "@/redux/slices/tasksSlice";
 import { cn } from "@/lib/utils";
-
-// const user: UserType[] = UserData;
-// const tasksUser = user[0].tasks;
 
 interface Props {}
 
 export const TasksList: React.FC<Props> = () => {
   const { filterName, setFilterName, handleFilterName } = useFilterName("");
-  const tasks = useSelector((state: RootState) => state.tasks.tasks);
+  const tasks = useSelector((state: RootState) => state.tasks.data);
+  const dispatch = useAppDispatch();
 
-  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(fetchTasksList());
+  }, [dispatch]);
 
   const handleDeleteTask = (id: string) => {
     dispatch(deleteTask(id));
@@ -55,12 +57,12 @@ export const TasksList: React.FC<Props> = () => {
             .filter((task) => task.name.toLowerCase().includes(filterName))
             .map((task) => (
               <TaskItem
-                key={task.id}
+                key={task.idTask}
                 taskName={task.name}
                 taskPoints={task.points}
                 taskDifficulty={task.difficulty}
-                deleteTask={() => handleDeleteTask(task.id)}
-                completeTask={() => handleCompleteTask(task.id)}
+                deleteTask={() => handleDeleteTask(task.idTask)}
+                completeTask={() => handleCompleteTask(task.idTask)}
                 className={cn({ "line-through": task.completed })}
                 classBtnComplete={cn({ hidden: task.completed })}
               />

@@ -12,7 +12,7 @@ interface Reward {
 }
 
 interface IInitial {
-  data: Reward[] | null;
+  data: Reward[];
   status: "idle" | "loading" | "succeeded" | "failed";
   error: string | null;
 }
@@ -26,7 +26,7 @@ export const fetchReward = createAsyncThunk<Reward[]>(
 );
 
 const initialState: IInitial = {
-  data: null,
+  data: [],
   status: "idle",
   error: null,
 };

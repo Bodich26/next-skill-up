@@ -1,42 +1,69 @@
 import { Difficulty } from "@/type";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { v4 as uuidv4 } from "uuid";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { Api } from "../../../services/api-client";
+import { Task } from "@prisma/client";
 
 interface TaskFormState {
   taskName: string;
   taskDifficulty: Difficulty | string;
 }
 
-interface Task {
-  id: string;
-  name: string;
-  difficulty: Difficulty;
-  points: number;
-  completed: boolean;
-}
-
 interface TasksState {
+  data: Task[];
+  status: "idle" | "loading" | "succeeded" | "failed";
+  error: string | null;
   form: TaskFormState;
-  tasks: Task[];
 }
 
-const difficultyPointsRange: Record<Difficulty, [number, number]> = {
-  "Easy layout": [420, 515],
-  "Medium layout": [616, 760],
-  "Hard layout": [780, 922],
-  "Easy App": [1140, 1460],
-  "Medium App": [1550, 1890],
-  "Hard App": [2100, 2830],
-  "Learning info": [430, 620],
-};
+export const fetchTasksList = createAsyncThunk(
+  "tasks/fetchTasksList",
+  async () => {
+    console.log("Fetching tasks...");
+    try {
+      const response = await Api.tasksList.getTasksList();
+      console.log("Tasks from server:", response);
+      return response;
+    } catch (error) {
+      console.log("Error fetching tasks:", error);
+      throw error;
+    }
+  }
+);
 
-const getRandomPoints = (range: [number, number]): number => {
-  const [min, max] = range;
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-};
+export const addNewTaskToUser = createAsyncThunk(
+  "tasks/addNewTaskToUser",
+  async (
+    {
+      userId,
+      name,
+      difficulty,
+      completed,
+    }: {
+      userId: number;
+      name: string;
+      difficulty: Difficulty;
+      completed: boolean;
+    },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await Api.tasksList.postNewTaskToUser(
+        userId,
+        name,
+        difficulty,
+        completed
+      );
+      return response;
+    } catch (error: any) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
 
 const initialState: TasksState = {
-  tasks: [],
+  data: [],
+  status: "idle",
+  error: null,
   form: {
     taskName: "",
     taskDifficulty: "",
@@ -53,49 +80,41 @@ const tasksSlice = createSlice({
     setTaskDifficulty: (state, action: PayloadAction<Difficulty | "">) => {
       state.form.taskDifficulty = action.payload;
     },
-    addTask(state, action: PayloadAction<TaskFormState>) {
-      const { taskName, taskDifficulty } = action.payload;
-
-      if (!taskDifficulty) {
-        return;
-      }
-
-      if (taskDifficulty in difficultyPointsRange) {
-        const pointsRange = difficultyPointsRange[taskDifficulty as Difficulty];
-        const points = getRandomPoints(pointsRange);
-
-        const newTask: Task = {
-          id: uuidv4(),
-          name: taskName,
-          difficulty: taskDifficulty as Difficulty,
-          points,
-          completed: false,
-        };
-
-        state.tasks.push(newTask);
-        state.form.taskName = "";
-        state.form.taskDifficulty = "";
-      }
-    },
-
     deleteTask(state, action: PayloadAction<string>) {
-      state.tasks = state.tasks.filter((task) => task.id !== action.payload);
+      state.data = state.data.filter((task) => task.idTask !== action.payload);
     },
-
     completedTask(state, action: PayloadAction<string>) {
-      const task = state.tasks.find((task) => task.id === action.payload);
+      const task = state.data.find((task) => task.idTask === action.payload);
       if (task) {
         task.completed = true;
       }
     },
   },
+  extraReducers: (builder) => {
+    builder
+      .addCase(
+        addNewTaskToUser.fulfilled,
+        (state, action: PayloadAction<Task>) => {
+          state.data.push(action.payload);
+        }
+      )
+      .addCase(fetchTasksList.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(
+        fetchTasksList.fulfilled,
+        (state, action: PayloadAction<Task[]>) => {
+          state.status = "succeeded";
+          state.data = action.payload;
+        }
+      )
+      .addCase(fetchTasksList.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.error.message || "Error";
+      });
+  },
 });
 
-export const {
-  setTaskName,
-  setTaskDifficulty,
-  addTask,
-  deleteTask,
-  completedTask,
-} = tasksSlice.actions;
+export const { setTaskName, setTaskDifficulty, deleteTask, completedTask } =
+  tasksSlice.actions;
 export default tasksSlice.reducer;

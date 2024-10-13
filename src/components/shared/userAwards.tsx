@@ -8,11 +8,11 @@ import { useAppDispatch } from "@/redux/hooks/useAppDispatch";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { fetchReward } from "@/redux/slices/rewardSlice";
-import { assignRewardToUser, fetchUser } from "@/redux/slices/userSlice";
+import { assignRewardToUser } from "@/redux/slices/userSlice";
 import { UserReward } from "@prisma/client";
 
 interface IUsers {
-  user: UserType | null;
+  user: UserType;
 }
 
 export default function UserAwards({ user }: IUsers) {
@@ -40,6 +40,7 @@ export default function UserAwards({ user }: IUsers) {
       const resultAction = await dispatch(
         assignRewardToUser({ userId, rewardId })
       );
+
       if (assignRewardToUser.fulfilled.match(resultAction)) {
         console.log("Reward added successfully!", resultAction.payload);
       } else {
@@ -57,7 +58,6 @@ export default function UserAwards({ user }: IUsers) {
         <div className="flex flex-row flex-wrap justify-start gap-6 overflow-y-auto max-h-[434px]">
           {filteredRewards.map((reward) => {
             const isRewardObtained = obtainedRewardIds.includes(reward.id);
-
             if (isRewardObtained) {
               return (
                 <div key={reward.id} className="w-[128px] h-[128px]">
@@ -77,7 +77,7 @@ export default function UserAwards({ user }: IUsers) {
                   nameAward={reward.name}
                   descAward={reward.description}
                   imgAward={reward.icon}
-                  onClick={() => handleAwardPopUp(user!.id, reward.id)}
+                  onClick={() => handleAwardPopUp(user.id, reward.id)}
                 />
               );
             }

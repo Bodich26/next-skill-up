@@ -1,4 +1,4 @@
-import { Reward, UserReward } from "@prisma/client";
+import { Reward } from "@prisma/client";
 
 export type User = {
   id: number;
@@ -10,14 +10,14 @@ export type User = {
   studyTimes: number;
   taskCompleted: number;
   iconRating: string;
-  awards?: UserReward[];
+  awards?: UserAwardType[];
 };
 
 export interface UserAwardType {
   id: number;
   userId: number;
   rewardId: number;
-  reward: Reward;
+  reward: Reward[];
 }
 
 export type TaskType = {

@@ -9,6 +9,7 @@ import { DisplayUser, SkeletonUser, SkeletonAward, UserAwards } from "./shared";
 
 export const GetUsers = () => {
   const dispatch = useAppDispatch();
+
   const {
     data: user,
     status,
@@ -16,7 +17,7 @@ export const GetUsers = () => {
   } = useSelector((state: RootState) => state.user);
 
   useEffect(() => {
-    if (status === "idle" && !user) {
+    if (status === "idle") {
       dispatch(fetchUser(1));
     }
   }, [status, dispatch, user]);
