@@ -8,7 +8,7 @@ import { useAppDispatch } from "@/redux/hooks/useAppDispatch";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { fetchReward } from "@/redux/slices/rewardSlice";
-import { assignRewardToUser } from "@/redux/slices/userSlice";
+import { assignRewardToUser, fetchUser } from "@/redux/slices/userSlice";
 import { UserReward } from "@prisma/client";
 
 interface IUsers {
