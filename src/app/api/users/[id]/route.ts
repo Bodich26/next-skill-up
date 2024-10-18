@@ -5,19 +5,37 @@ export async function GET(
   req: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const { id } = params;
+  const userId = parseInt(params.id);
 
-  if (id) {
-    const userId = Number(id);
-
+  if (userId) {
     const user = await prisma.user.findUnique({
       where: { id: userId },
+      include: {
+        awards: {
+          include: {
+            reward: {
+              select: {
+                id: true,
+                name: true,
+                icon: true,
+                description: true,
+                points: true,
+                role: true,
+              },
+            },
+          },
+        },
+      },
     });
 
     if (!user) {
       return NextResponse.json({ message: "User not found" }, { status: 404 });
     }
-    return NextResponse.json(user);
+    const userWithAwards = {
+      ...user,
+      awards: user.awards.map((userReward) => userReward.reward),
+    };
+    return NextResponse.json(userWithAwards);
   }
   return NextResponse.json({ message: "User ID is required" }, { status: 400 });
 }

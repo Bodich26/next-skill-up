@@ -4,7 +4,7 @@ import { User } from "@/type/user";
 
 interface IInitial {
   data: User | null;
-  status: "idle" | "loading" | "succeeded" | "failed";
+  statusUser: "idle" | "loading" | "succeeded" | "failed";
   error: string | null;
 }
 
@@ -22,17 +22,9 @@ export const fetchUser = createAsyncThunk(
   }
 );
 
-export const assignRewardToUser = createAsyncThunk(
-  "reward/addRewardToUser",
-  async ({ userId, rewardId }: { userId: number; rewardId: number }) => {
-    const response = await Api.rewards.addRewardToUser(userId, rewardId);
-    return response.user;
-  }
-);
-
 const initialState: IInitial = {
   data: null,
-  status: "idle",
+  statusUser: "idle",
   error: null,
 };
 
@@ -43,32 +35,14 @@ const userSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchUser.pending, (state) => {
-        state.status = "loading";
+        state.statusUser = "loading";
       })
       .addCase(fetchUser.fulfilled, (state, action: PayloadAction<User>) => {
-        state.status = "succeeded";
-        state.data = {
-          ...action.payload,
-          awards: action.payload.awards || [],
-        };
+        state.statusUser = "succeeded";
+        state.data = action.payload;
       })
       .addCase(fetchUser.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.error.message || "Error";
-      })
-
-      .addCase(assignRewardToUser.pending, (state) => {
-        state.status = "loading";
-      })
-      .addCase(
-        assignRewardToUser.fulfilled,
-        (state, action: PayloadAction<User>) => {
-          state.status = "succeeded";
-          state!.data!.awards = action.payload.awards;
-        }
-      )
-      .addCase(assignRewardToUser.rejected, (state, action) => {
-        state.status = "failed";
+        state.statusUser = "failed";
         state.error = action.error.message || "Error";
       });
   },

@@ -13,21 +13,37 @@ interface Reward {
 
 interface IInitial {
   data: Reward[];
-  status: "idle" | "loading" | "succeeded" | "failed";
+  statusRewards: "idle" | "loading" | "succeeded" | "failed";
+  statusAddRewards: "idle" | "loading" | "succeeded" | "failed";
   error: string | null;
 }
 
-export const fetchReward = createAsyncThunk<Reward[]>(
-  "reward/fetchReward",
+export const fetchRewards = createAsyncThunk<Reward[]>(
+  "reward/fetchRewards",
   async () => {
     const response = await Api.rewards.getListRewards();
     return response;
   }
 );
 
+export const addRewardToUser = createAsyncThunk(
+  "reward/addRewardToUser",
+  async ({ userId, rewardId }: { userId: number; rewardId: number }) => {
+    try {
+      const response = await Api.rewards.postRewardToUser(userId, rewardId);
+      console.log("User from server:", response);
+      return response;
+    } catch (error) {
+      console.log("Error fetching users:", error);
+      throw error;
+    }
+  }
+);
+
 const initialState: IInitial = {
   data: [],
-  status: "idle",
+  statusRewards: "idle",
+  statusAddRewards: "idle",
   error: null,
 };
 
@@ -37,18 +53,33 @@ const rewardSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(fetchReward.pending, (state) => {
-        state.status = "loading";
+      .addCase(fetchRewards.pending, (state) => {
+        state.statusRewards = "loading";
       })
       .addCase(
-        fetchReward.fulfilled,
+        fetchRewards.fulfilled,
         (state, action: PayloadAction<Reward[]>) => {
-          state.status = "succeeded";
+          state.statusRewards = "succeeded";
           state.data = action.payload;
         }
       )
-      .addCase(fetchReward.rejected, (state, action) => {
-        state.status = "failed";
+      .addCase(fetchRewards.rejected, (state, action) => {
+        state.statusRewards = "failed";
+        state.error = action.error.message || "Error";
+      })
+
+      .addCase(addRewardToUser.pending, (state) => {
+        state.statusAddRewards = "loading";
+      })
+      .addCase(
+        addRewardToUser.fulfilled,
+        (state, action: PayloadAction<Reward[]>) => {
+          state.statusAddRewards = "succeeded";
+          state.data = action.payload;
+        }
+      )
+      .addCase(addRewardToUser.rejected, (state, action) => {
+        state.statusAddRewards = "failed";
         state.error = action.error.message || "Error";
       });
   },

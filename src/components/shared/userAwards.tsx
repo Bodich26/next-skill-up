@@ -7,41 +7,38 @@ import { AddAwardPopUp } from "../ui";
 import { useAppDispatch } from "@/redux/hooks/useAppDispatch";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
-import { fetchReward } from "@/redux/slices/rewardSlice";
-import { assignRewardToUser, fetchUser } from "@/redux/slices/userSlice";
-import { UserReward } from "@prisma/client";
+import { addRewardToUser, fetchRewards } from "@/redux/slices/rewardSlice";
+import { fetchUser } from "@/redux/slices/userSlice";
+import { Reward } from "@prisma/client";
 
 interface IUsers {
-  user: UserType;
+  user: UserType | null;
 }
 
 export default function UserAwards({ user }: IUsers) {
   const dispatch = useAppDispatch();
-
-  const { data: reward, status } = useSelector(
-    (state: RootState) => state.reward
-  );
+  const { data: reward } = useSelector((state: RootState) => state.reward);
 
   useEffect(() => {
-    if (status === "idle") {
-      dispatch(fetchReward());
-    }
-  }, [dispatch, status]);
+    dispatch(fetchRewards());
+  }, [dispatch, user]);
 
   const obtainedRewardIds =
-    user?.awards?.map((userReward: UserReward) => userReward.rewardId) || [];
+    user.awards.map((userReward: Reward) => userReward.id) || [];
 
-  const filteredRewards = reward
-    ? reward.filter((r) => r.role === user?.role)
+  const filteredRewards = Array.isArray(reward)
+    ? reward.filter((r) => r.role === user.role)
     : [];
 
   const handleAwardPopUp = async (userId: number, rewardId: number) => {
     try {
       const resultAction = await dispatch(
-        assignRewardToUser({ userId, rewardId })
+        addRewardToUser({ userId, rewardId })
       );
 
-      if (assignRewardToUser.fulfilled.match(resultAction)) {
+      if (addRewardToUser.fulfilled.match(resultAction)) {
+        dispatch(fetchRewards());
+        dispatch(fetchUser(user.id));
         console.log("Reward added successfully!", resultAction.payload);
       } else {
         console.error("Failed to add reward:", resultAction.error);

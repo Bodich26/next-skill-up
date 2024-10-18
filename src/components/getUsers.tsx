@@ -12,24 +12,22 @@ export const GetUsers = () => {
 
   const {
     data: user,
-    status,
+    statusUser,
     error,
   } = useSelector((state: RootState) => state.user);
 
   useEffect(() => {
-    if (status === "idle") {
-      dispatch(fetchUser(1));
-    }
-  }, [status, dispatch, user]);
+    dispatch(fetchUser(1));
+  }, [dispatch]);
 
   return (
     <>
-      {status === "loading" || status === "idle" ? (
+      {statusUser === "loading" || statusUser === "idle" ? (
         <>
           <SkeletonUser />
           <SkeletonAward />
         </>
-      ) : status === "failed" ? (
+      ) : statusUser === "failed" ? (
         <>
           <div>
             <div className="border-[1px] border-solid border-input bg-card flex gap-9 items-start p-4 rounded-lg min-h-[258px]">
