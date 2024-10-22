@@ -1,6 +1,5 @@
 "use client";
 import React, { useEffect } from "react";
-
 import { UserType } from "@/type";
 import Image from "next/image";
 import { AddAwardPopUp } from "../ui";
@@ -24,10 +23,10 @@ export default function UserAwards({ user }: IUsers) {
   }, [dispatch, user]);
 
   const obtainedRewardIds =
-    user.awards.map((userReward: Reward) => userReward.id) || [];
+    user?.awards.map((userReward: Reward) => userReward.id) || [];
 
   const filteredRewards = Array.isArray(reward)
-    ? reward.filter((r) => r.role === user.role)
+    ? reward.filter((r) => r.role === user?.role)
     : [];
 
   const handleAwardPopUp = async (userId: number, rewardId: number) => {
@@ -35,10 +34,9 @@ export default function UserAwards({ user }: IUsers) {
       const resultAction = await dispatch(
         addRewardToUser({ userId, rewardId })
       );
-
       if (addRewardToUser.fulfilled.match(resultAction)) {
-        dispatch(fetchRewards());
-        dispatch(fetchUser(user.id));
+        await dispatch(fetchUser(user.id));
+
         console.log("Reward added successfully!", resultAction.payload);
       } else {
         console.error("Failed to add reward:", resultAction.error);

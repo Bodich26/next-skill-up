@@ -28,16 +28,30 @@ export const AddAwardPopUp: React.FC<Props> = ({
   descAward,
   imgAward,
 }) => {
+  const [isOpen, setIsOpen] = React.useState(false);
+
+  const handleOpen = () => setIsOpen(true);
+  const handleClose = () => setIsOpen(false);
+
+  const handleReceiveClick = () => {
+    onClick();
+    handleClose();
+  };
+
   return (
     <div className={className}>
-      <Dialog>
-        <DialogTrigger>
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogTrigger onClick={handleOpen}>
           {<PlusItemBox nameAward={nameAward} point={point} />}
         </DialogTrigger>
         <DialogContent className="flex justify-between max-w-[699px] min-h-[270px]">
           <div className="flex flex-col">
             <Image src={imgAward} width={149} height={149} alt="IconAward" />
-            <Button className=" mt-[30px]" type="submit" onClick={onClick}>
+            <Button
+              className=" mt-[30px]"
+              type="submit"
+              onClick={handleReceiveClick}
+            >
               Receive
             </Button>
           </div>
