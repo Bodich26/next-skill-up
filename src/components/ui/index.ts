@@ -7,3 +7,4 @@ export { Select } from "./select";
 export { AddAwardPopUp } from "./addAwardPopUp";
 export { Dialog } from "./dialog";
 export { PlusItemBox } from "./plusItemBox";
+export { Toaster } from "./sonner";

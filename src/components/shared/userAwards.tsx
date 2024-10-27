@@ -1,8 +1,8 @@
 "use client";
-import React, { useEffect } from "react";
+import React from "react";
 import { UserType } from "@/type";
 import Image from "next/image";
-import { AddAwardPopUp, Skeleton } from "../ui";
+import { AddAwardPopUp, Skeleton, Toaster } from "../ui";
 import { useAppDispatch } from "@/redux/hooks/useAppDispatch";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
@@ -10,6 +10,7 @@ import { addRewardToUser, fetchRewards } from "@/redux/slices/rewardSlice";
 import { fetchUser } from "@/redux/slices/userSlice";
 import { Reward } from "@prisma/client";
 import { RemoveAward } from "./removeAward";
+import { toast } from "sonner";
 
 interface IUsers {
   user: UserType | null;
@@ -17,11 +18,9 @@ interface IUsers {
 
 export default function UserAwards({ user }: IUsers) {
   const dispatch = useAppDispatch();
-  const {
-    data: reward,
-    statusAddRewards,
-    statusRemoveRewards,
-  } = useSelector((state: RootState) => state.reward);
+  const { data: reward, statusAddRewards } = useSelector(
+    (state: RootState) => state.reward
+  );
 
   React.useEffect(() => {
     dispatch(fetchRewards());
@@ -35,19 +34,23 @@ export default function UserAwards({ user }: IUsers) {
     : [];
 
   const handleAwardPopUp = async (userId: number, rewardId: number) => {
+    const loadingToastId = toast.loading("Loading...");
+
     try {
       const resultAction = await dispatch(
         addRewardToUser({ userId, rewardId })
       );
+
       if (addRewardToUser.fulfilled.match(resultAction)) {
         await dispatch(fetchUser(user.id));
-
-        console.log("Reward added successfully!", resultAction.payload);
-      } else {
-        console.error("Failed to add reward:", resultAction.error);
+        toast.success("Reward added successfully!");
+      } else if (addRewardToUser.rejected.match(resultAction)) {
+        toast.error("Error adding reward");
       }
     } catch (error) {
-      console.error("Error adding reward:", error);
+      toast.error("An error occurred while adding a reward.");
+    } finally {
+      toast.dismiss(loadingToastId);
     }
   };
 
@@ -100,6 +103,7 @@ export default function UserAwards({ user }: IUsers) {
           })}
         </div>
       </div>
+      <Toaster position="bottom-left" expand={false} />
     </div>
   );
 }

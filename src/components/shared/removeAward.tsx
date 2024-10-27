@@ -4,6 +4,8 @@ import { removeRewardToUser } from "@/redux/slices/rewardSlice";
 import { fetchUser } from "@/redux/slices/userSlice";
 import { X } from "lucide-react";
 import React from "react";
+import { Toaster } from "../ui";
+import { toast } from "sonner";
 
 interface Props {
   className?: string;
@@ -19,19 +21,23 @@ export const RemoveAward: React.FC<Props> = ({
   const dispatch = useAppDispatch();
 
   const handleRemoveAwards = async (rewardId: number, userId: number) => {
+    const loadingToastId = toast.loading("Loading...");
+
     try {
       const resultAction = await dispatch(
         removeRewardToUser({ userId, rewardId })
       );
+
       if (removeRewardToUser.fulfilled.match(resultAction)) {
         await dispatch(fetchUser(userId));
-
-        console.log("Reward remove successfully!", resultAction.payload);
-      } else {
-        console.error("Failed to remove reward:", resultAction.error);
+        toast.success("Reward remove successfully!");
+      } else if (removeRewardToUser.rejected.match(resultAction)) {
+        toast.error("Error removing reward");
       }
     } catch (error) {
-      console.error("Error removing reward:", error);
+      toast.error("An error occurred while removing the reward");
+    } finally {
+      toast.dismiss(loadingToastId);
     }
   };
 
@@ -43,6 +49,7 @@ export const RemoveAward: React.FC<Props> = ({
         height={18}
         onClick={() => handleRemoveAwards(rewardId, userId)}
       />
+      <Toaster position="bottom-left" expand={false} />
     </>
   );
 };
