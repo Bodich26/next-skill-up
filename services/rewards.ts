@@ -18,3 +18,13 @@ export const postRewardToUser = async (userId: number, rewardId: number) => {
   });
   return data;
 };
+
+export const deleteRewardToUser = async (userId: number, rewardId: number) => {
+  const { data } = await axiosInstance.delete(`/reward`, {
+    data: {
+      userId,
+      rewardId,
+    },
+  });
+  return data;
+};

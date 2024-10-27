@@ -15,6 +15,7 @@ interface IInitial {
   data: Reward[];
   statusRewards: "idle" | "loading" | "succeeded" | "failed";
   statusAddRewards: "idle" | "loading" | "succeeded" | "failed";
+  statusRemoveRewards: "idle" | "loading" | "succeeded" | "failed";
   error: string | null;
 }
 
@@ -40,10 +41,24 @@ export const addRewardToUser = createAsyncThunk(
   }
 );
 
+export const removeRewardToUser = createAsyncThunk(
+  "reward/removeRewardToUser",
+  async ({ userId, rewardId }: { userId: number; rewardId: number }) => {
+    try {
+      const response = await Api.rewards.deleteRewardToUser(userId, rewardId);
+      console.log("User from server:", response);
+      return response;
+    } catch (error) {
+      console.log("Error fetching users:", error);
+    }
+  }
+);
+
 const initialState: IInitial = {
   data: [],
   statusRewards: "idle",
   statusAddRewards: "idle",
+  statusRemoveRewards: "idle",
   error: null,
 };
 
@@ -80,6 +95,21 @@ const rewardSlice = createSlice({
       )
       .addCase(addRewardToUser.rejected, (state, action) => {
         state.statusAddRewards = "failed";
+        state.error = action.error.message || "Error";
+      })
+
+      .addCase(removeRewardToUser.pending, (state) => {
+        state.statusRemoveRewards = "loading";
+      })
+      .addCase(
+        removeRewardToUser.fulfilled,
+        (state, action: PayloadAction<Reward[]>) => {
+          (state.statusRemoveRewards = "succeeded"),
+            (state.data = action.payload);
+        }
+      )
+      .addCase(removeRewardToUser.rejected, (state, action) => {
+        state.statusRemoveRewards = "failed";
         state.error = action.error.message || "Error";
       });
   },
