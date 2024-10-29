@@ -10,9 +10,21 @@ export async function POST(req: Request) {
   return postNewTaskToUser(req);
 }
 
+export async function PATCH(req: Request) {
+  return completeUserTask(req);
+}
+
+export async function DELETE(req: Request) {
+  return deleteUserTask(req);
+}
+
 export async function getTasksArray() {
   try {
-    const tasksList = await prisma.task.findMany();
+    const tasksList = await prisma.task.findMany({
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
     return NextResponse.json(tasksList);
   } catch (error) {
     console.error("Error fetching tasks:", error);
@@ -67,3 +79,73 @@ const calculatePoints = (difficulty: string): number => {
   const range = pointsMapping[difficulty];
   return range ? getRandomPoints(range) : 0;
 };
+
+export async function deleteUserTask(req: Request) {
+  try {
+    const { idTask } = await req.json();
+
+    if (!idTask) {
+      return NextResponse.json({ message: "Missing idTask" }, { status: 400 });
+    }
+
+    const task = await prisma.task.findUnique({
+      where: { idTask },
+    });
+
+    if (!task) {
+      return NextResponse.json({ message: "Task not found" }, { status: 404 });
+    }
+
+    await prisma.task.delete({
+      where: { idTask },
+    });
+
+    return NextResponse.json({ message: "Task deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting task:", error);
+    return NextResponse.error();
+  }
+}
+
+export async function completeUserTask(req: Request) {
+  try {
+    const { idTask, completed } = await req.json();
+
+    if (!idTask || completed === undefined) {
+      return NextResponse.json({ message: "Missing idTask" }, { status: 400 });
+    }
+
+    const task = await prisma.task.findUnique({
+      where: { idTask },
+    });
+
+    if (!task) {
+      return NextResponse.json({ message: "Task not found" }, { status: 404 });
+    }
+
+    await prisma.task.update({
+      where: { idTask },
+      data: {
+        completed: true,
+      },
+    });
+
+    const userId = task.userId;
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        rating: {
+          increment: task.points,
+        },
+        taskCompleted: {
+          increment: 1,
+        },
+      },
+    });
+
+    return NextResponse.json({ message: "Task completed successfully" });
+  } catch (error) {
+    console.error("Error completed task:", error);
+    return NextResponse.error();
+  }
+}

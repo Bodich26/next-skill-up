@@ -1,16 +1,15 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React from "react";
 import { useSelector } from "react-redux";
 import {
   setTaskDifficulty,
   setTaskName,
   addNewTaskToUser,
-  fetchTasksList,
 } from "../../redux/slices/tasksSlice";
 
 import { useResetFilter } from "@/hooks";
-import { Button, Input, Select } from "../ui";
+import { Button, Input, Select, Toaster } from "../ui";
 import {
   SelectContent,
   SelectItem,
@@ -20,6 +19,7 @@ import {
 
 import { Difficulty } from "@/type";
 import { useAppDispatch } from "@/redux/hooks/useAppDispatch";
+import { toast } from "sonner";
 
 interface Props {
   className?: string;
@@ -56,7 +56,7 @@ export const TasksForm: React.FC<Props> = ({ className }) => {
         difficulty: taskDifficulty,
         completed: false,
       };
-      console.log("Adding new task:", newTask);
+      toast.success("Task is to successfully create!");
       handleResetFilters();
       dispatch(addNewTaskToUser(newTask));
     }
@@ -112,6 +112,7 @@ export const TasksForm: React.FC<Props> = ({ className }) => {
           Add Task
         </Button>
       </form>
+      <Toaster position="bottom-left" expand={false} />
     </div>
   );
 };

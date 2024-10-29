@@ -10,7 +10,9 @@ interface TaskFormState {
 
 interface TasksState {
   data: Task[];
-  status: "idle" | "loading" | "succeeded" | "failed";
+  statusTasksList: "idle" | "loading" | "succeeded" | "failed";
+  statusRemoveUserTask: "idle" | "loading" | "succeeded" | "failed";
+  statusCompletedUserTask: "idle" | "loading" | "succeeded" | "failed";
   error: string | null;
   form: TaskFormState;
 }
@@ -60,9 +62,42 @@ export const addNewTaskToUser = createAsyncThunk(
   }
 );
 
+export const removeUserTask = createAsyncThunk(
+  "tasks/removeUserTask",
+  async ({ idTask }: { idTask: string }) => {
+    try {
+      const response = await Api.tasksList.deleteTaskToUser(idTask);
+      console.log("Task from server:", response);
+      return response;
+    } catch (error) {
+      console.log("Error when removing a Task:", error);
+      throw error;
+    }
+  }
+);
+
+export const completedUserTask = createAsyncThunk(
+  "tasks/completedUserTask",
+  async ({ idTask, completed }: { idTask: string; completed: boolean }) => {
+    try {
+      const response = await Api.tasksList.completeTaskToUser(
+        idTask,
+        completed
+      );
+      console.log("Task from server:", response);
+      return response;
+    } catch (error) {
+      console.log("Error while executing Task:", error);
+      throw error;
+    }
+  }
+);
+
 const initialState: TasksState = {
   data: [],
-  status: "idle",
+  statusTasksList: "idle",
+  statusRemoveUserTask: "idle",
+  statusCompletedUserTask: "idle",
   error: null,
   form: {
     taskName: "",
@@ -95,21 +130,53 @@ const tasksSlice = createSlice({
       .addCase(
         addNewTaskToUser.fulfilled,
         (state, action: PayloadAction<Task>) => {
-          state.data.push(action.payload);
+          state.data.unshift(action.payload);
         }
       )
       .addCase(fetchTasksList.pending, (state) => {
-        state.status = "loading";
+        state.statusTasksList = "loading";
       })
       .addCase(
         fetchTasksList.fulfilled,
         (state, action: PayloadAction<Task[]>) => {
-          state.status = "succeeded";
+          state.statusTasksList = "succeeded";
           state.data = action.payload;
         }
       )
       .addCase(fetchTasksList.rejected, (state, action) => {
-        state.status = "failed";
+        state.statusTasksList = "failed";
+        state.error = action.error.message || "Error";
+      })
+      .addCase(removeUserTask.pending, (state) => {
+        state.statusRemoveUserTask = "loading";
+      })
+      .addCase(
+        removeUserTask.fulfilled,
+        (state, action: PayloadAction<Task>) => {
+          (state.statusRemoveUserTask = "succeeded"),
+            (state.data = state.data.filter(
+              (task) => task.idTask !== action.payload.idTask
+            ));
+        }
+      )
+      .addCase(removeUserTask.rejected, (state, action) => {
+        state.statusRemoveUserTask = "failed";
+        state.error = action.error.message || "Error";
+      })
+      .addCase(completedUserTask.pending, (state) => {
+        state.statusCompletedUserTask = "loading";
+      })
+      .addCase(
+        completedUserTask.fulfilled,
+        (state, action: PayloadAction<Task>) => {
+          (state.statusCompletedUserTask = "succeeded"),
+            (state.data = state.data.filter(
+              (task) => task.completed !== action.payload.completed
+            ));
+        }
+      )
+      .addCase(completedUserTask.rejected, (state, action) => {
+        state.statusCompletedUserTask = "failed";
         state.error = action.error.message || "Error";
       });
   },

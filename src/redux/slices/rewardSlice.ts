@@ -32,10 +32,10 @@ export const addRewardToUser = createAsyncThunk(
   async ({ userId, rewardId }: { userId: number; rewardId: number }) => {
     try {
       const response = await Api.rewards.postRewardToUser(userId, rewardId);
-      console.log("User from server:", response);
+      console.log("Reward from server:", response);
       return response;
     } catch (error) {
-      console.log("Error fetching users:", error);
+      console.log("Error fetching Rewards:", error);
       throw error;
     }
   }
@@ -46,10 +46,11 @@ export const removeRewardToUser = createAsyncThunk(
   async ({ userId, rewardId }: { userId: number; rewardId: number }) => {
     try {
       const response = await Api.rewards.deleteRewardToUser(userId, rewardId);
-      console.log("User from server:", response);
+      console.log("Reward from server:", response);
       return response;
     } catch (error) {
-      console.log("Error fetching users:", error);
+      console.log("Error fetching Rewards:", error);
+      throw error;
     }
   }
 );

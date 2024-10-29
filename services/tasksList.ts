@@ -18,6 +18,33 @@ export const postNewTaskToUser = async (
     difficulty: taskDifficulty,
     completed,
   });
-
   return data;
+};
+
+export const deleteTaskToUser = async (idTask: string) => {
+  try {
+    const { data } = await axiosInstance.delete("/tasks", {
+      data: { idTask },
+    });
+    return data;
+  } catch (error) {
+    console.error("Error deleting task:", error);
+    throw error;
+  }
+};
+
+export const completeTaskToUser = async (
+  idTask: string,
+  completed: boolean
+) => {
+  try {
+    const { data } = await axiosInstance.patch("/tasks", {
+      idTask,
+      completed,
+    });
+    return data;
+  } catch (error) {
+    console.error("Error completed task:", error);
+    throw error;
+  }
 };

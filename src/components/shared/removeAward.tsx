@@ -32,10 +32,10 @@ export const RemoveAward: React.FC<Props> = ({
         await dispatch(fetchUser(userId));
         toast.success("Reward remove successfully!");
       } else if (removeRewardToUser.rejected.match(resultAction)) {
-        toast.error("Error removing reward");
+        toast.error("Error removing reward.");
       }
     } catch (error) {
-      toast.error("An error occurred while removing the reward");
+      toast.error("An error occurred while removing the reward.");
     } finally {
       toast.dismiss(loadingToastId);
     }
