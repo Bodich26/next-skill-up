@@ -45,8 +45,9 @@ export const TasksForm: React.FC<Props> = ({ className }) => {
     dispatch(setTaskDifficulty(value as Difficulty));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const loadingCreateTask = toast.loading("Loading...");
 
     if (taskName && taskDifficulty) {
       const userId = 1;
@@ -56,9 +57,16 @@ export const TasksForm: React.FC<Props> = ({ className }) => {
         difficulty: taskDifficulty,
         completed: false,
       };
-      toast.success("Task is to successfully create!");
-      handleResetFilters();
-      dispatch(addNewTaskToUser(newTask));
+
+      try {
+        await dispatch(addNewTaskToUser(newTask));
+        toast.success("Task is to successfully create!");
+        handleResetFilters();
+      } catch (error) {
+        toast.error("Failed to create task.");
+      } finally {
+        toast.dismiss(loadingCreateTask);
+      }
     }
   };
 

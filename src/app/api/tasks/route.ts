@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "../../../../prisma/prisma-client";
 import { v4 as uuidv4 } from "uuid";
 
@@ -6,15 +6,19 @@ export async function GET() {
   return getTasksArray();
 }
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   return postNewTaskToUser(req);
 }
 
-export async function PATCH(req: Request) {
+export async function PATCH(req: NextRequest) {
   return completeUserTask(req);
 }
 
-export async function DELETE(req: Request) {
+export async function PUT(req: NextRequest) {
+  return updateStudyTimesUser(req);
+}
+
+export async function DELETE(req: NextRequest) {
   return deleteUserTask(req);
 }
 
@@ -32,7 +36,7 @@ export async function getTasksArray() {
   }
 }
 
-export async function postNewTaskToUser(req: Request) {
+export async function postNewTaskToUser(req: NextRequest) {
   const { userId, name, difficulty } = await req.json();
 
   if (!userId || !name || !difficulty) {
@@ -80,7 +84,7 @@ const calculatePoints = (difficulty: string): number => {
   return range ? getRandomPoints(range) : 0;
 };
 
-export async function deleteUserTask(req: Request) {
+export async function deleteUserTask(req: NextRequest) {
   try {
     const { idTask } = await req.json();
 
@@ -107,7 +111,7 @@ export async function deleteUserTask(req: Request) {
   }
 }
 
-export async function completeUserTask(req: Request) {
+export async function completeUserTask(req: NextRequest) {
   try {
     const { idTask, completed } = await req.json();
 
@@ -146,6 +150,37 @@ export async function completeUserTask(req: Request) {
     return NextResponse.json({ message: "Task completed successfully" });
   } catch (error) {
     console.error("Error completed task:", error);
+    return NextResponse.error();
+  }
+}
+
+export async function updateStudyTimesUser(req: NextRequest) {
+  try {
+    const { time, userId } = await req.json();
+
+    if (typeof time !== "number" || time <= 0) {
+      return NextResponse.json(
+        { message: "Invalid time value" },
+        { status: 400 }
+      );
+    }
+
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user) {
+      return NextResponse.json({ message: "User not found" }, { status: 404 });
+    }
+
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        studyTimes: {
+          increment: time,
+        },
+      },
+    });
+    return NextResponse.json({ message: "Study times updated successfully" });
+  } catch (error) {
+    console.error("Error update study times for  user:", error);
     return NextResponse.error();
   }
 }

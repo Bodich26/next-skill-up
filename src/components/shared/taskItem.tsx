@@ -1,6 +1,6 @@
 import React from "react";
 import { Bookmark, CircleDollarSign, Settings } from "lucide-react";
-import { Button } from "../ui";
+import { Button, TimeTaskPopUp } from "../ui";
 import { cn } from "@/lib/utils";
 
 interface Props {
@@ -8,9 +8,9 @@ interface Props {
   taskPoints?: number;
   taskDifficulty: string;
   deleteTask: () => void;
-  completeTask: () => void;
   className?: string;
   classBtnComplete?: string;
+  onClickConfirmPopUpBtn: () => void;
 }
 
 export const TaskItem: React.FC<Props> = ({
@@ -18,9 +18,9 @@ export const TaskItem: React.FC<Props> = ({
   taskPoints,
   taskDifficulty,
   deleteTask,
-  completeTask,
   className,
   classBtnComplete,
+  onClickConfirmPopUpBtn,
 }) => {
   return (
     <div
@@ -46,20 +46,28 @@ export const TaskItem: React.FC<Props> = ({
           <dd className="font-bold text-base">{taskDifficulty}</dd>
         </dl>
       </div>
-      <div className="flex flex-col gap-4">
-        <Button
-          onClick={completeTask}
-          variant="default"
-          size="lg"
-          className={cn("text-lg h-9", classBtnComplete)}
-        >
-          Complete
-        </Button>
+      <div>
+        <TimeTaskPopUp
+          triggerButton={
+            <Button
+              variant="default"
+              size="lg"
+              className={cn(
+                "text-lg h-9 w-[145px] mb-[23px]",
+                classBtnComplete
+              )}
+            >
+              Complete
+            </Button>
+          }
+          classNameTrigger={cn(classBtnComplete)}
+          onClickConfirmPopUp={onClickConfirmPopUpBtn}
+        />
         <Button
           onClick={deleteTask}
           variant="secondary"
           size="lg"
-          className="text-lg h-9"
+          className="text-lg h-9 w-[145px]"
         >
           Delete
         </Button>

@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect } from "react";
+import React from "react";
 import { useAppDispatch } from "@/redux/hooks/useAppDispatch";
 import { useSelector } from "react-redux";
 import { Search } from "lucide-react";
@@ -21,7 +21,7 @@ interface Props {}
 
 export const TasksList: React.FC<Props> = () => {
   const [isLoading, setIsLoading] = React.useState<boolean>(true);
-  const { filterName, setFilterName, handleFilterName } = useFilterName("");
+  const { filterName, handleFilterName } = useFilterName("");
   const { data: tasks, statusTasksList } = useSelector(
     (state: RootState) => state.tasks
   );
@@ -47,10 +47,10 @@ export const TasksList: React.FC<Props> = () => {
         await dispatch(fetchTasksList());
         toast.success("Task remove successfully!");
       } else if (removeUserTask.rejected.match(resultAction)) {
-        toast.error("Error removing task.");
+        toast.error("Error removing task 😞");
       }
     } catch (error) {
-      toast.error("An error occurred while removing the task.");
+      toast.error("An error occurred while removing the task 😞");
     } finally {
       toast.dismiss(loadingToastId);
     }
@@ -68,10 +68,10 @@ export const TasksList: React.FC<Props> = () => {
         await dispatch(fetchTasksList());
         toast.success("Task completed successfully!");
       } else if (completedUserTask.rejected.match(resultAction)) {
-        toast.error("Error while executing task");
+        toast.error("Error while executing task 😞");
       }
     } catch (error) {
-      toast.error("An error occurred while completed the task.");
+      toast.error("An error occurred while completed the task 😞");
     } finally {
       toast.dismiss(loadingToastId);
     }
@@ -102,6 +102,7 @@ export const TasksList: React.FC<Props> = () => {
           // eslint-disable-next-line react/no-unescaped-entities
           <p className="text-center text-xl">You don't have any tasks 😞</p>
         ) : (
+          Array.isArray(tasks) &&
           tasks
             .filter((task) => task.name.toLowerCase().includes(filterName))
             .map((task) => (
@@ -111,7 +112,7 @@ export const TasksList: React.FC<Props> = () => {
                 taskPoints={task.points}
                 taskDifficulty={task.difficulty}
                 deleteTask={() => handleDeleteTask(task.idTask)}
-                completeTask={() =>
+                onClickConfirmPopUpBtn={() =>
                   handleCompleteTask(task.idTask, task.completed)
                 }
                 className={cn({ "line-through": task.completed })}

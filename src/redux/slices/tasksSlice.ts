@@ -13,6 +13,7 @@ interface TasksState {
   statusTasksList: "idle" | "loading" | "succeeded" | "failed";
   statusRemoveUserTask: "idle" | "loading" | "succeeded" | "failed";
   statusCompletedUserTask: "idle" | "loading" | "succeeded" | "failed";
+  statusTimeValueCompleteTask: "idle" | "loading" | "succeeded" | "failed";
   error: string | null;
   form: TaskFormState;
 }
@@ -93,11 +94,26 @@ export const completedUserTask = createAsyncThunk(
   }
 );
 
+export const setTimeValueCompleteTask = createAsyncThunk(
+  "tasks/setTimeValueCompleteTask",
+  async ({ time, userId }: { time: number; userId: number }) => {
+    try {
+      const response = await Api.tasksList.setStudyTimeToUser(time, userId);
+      console.log("Task from server:", response);
+      return response;
+    } catch (error) {
+      console.log("Error set study time to User:", error);
+      throw error;
+    }
+  }
+);
+
 const initialState: TasksState = {
   data: [],
   statusTasksList: "idle",
   statusRemoveUserTask: "idle",
   statusCompletedUserTask: "idle",
+  statusTimeValueCompleteTask: "idle",
   error: null,
   form: {
     taskName: "",
@@ -127,6 +143,7 @@ const tasksSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      //---Add New Task
       .addCase(
         addNewTaskToUser.fulfilled,
         (state, action: PayloadAction<Task>) => {
@@ -140,13 +157,15 @@ const tasksSlice = createSlice({
         fetchTasksList.fulfilled,
         (state, action: PayloadAction<Task[]>) => {
           state.statusTasksList = "succeeded";
-          state.data = action.payload;
+          state.data = Array.isArray(action.payload) ? action.payload : [];
         }
       )
       .addCase(fetchTasksList.rejected, (state, action) => {
         state.statusTasksList = "failed";
         state.error = action.error.message || "Error";
       })
+
+      //---Remove Task User
       .addCase(removeUserTask.pending, (state) => {
         state.statusRemoveUserTask = "loading";
       })
@@ -163,21 +182,42 @@ const tasksSlice = createSlice({
         state.statusRemoveUserTask = "failed";
         state.error = action.error.message || "Error";
       })
+
+      //---Complete Task User
       .addCase(completedUserTask.pending, (state) => {
         state.statusCompletedUserTask = "loading";
       })
       .addCase(
         completedUserTask.fulfilled,
         (state, action: PayloadAction<Task>) => {
-          (state.statusCompletedUserTask = "succeeded"),
-            (state.data = state.data.filter(
-              (task) => task.completed !== action.payload.completed
-            ));
+          state.statusCompletedUserTask = "succeeded";
+          const task = state.data.find(
+            (task) => task.idTask === action.payload.idTask
+          );
+          if (task) {
+            task.completed = action.payload.completed;
+          }
         }
       )
       .addCase(completedUserTask.rejected, (state, action) => {
         state.statusCompletedUserTask = "failed";
         state.error = action.error.message || "Error";
+      })
+
+      //---Set study time Task for user
+      .addCase(setTimeValueCompleteTask.pending, (state) => {
+        state.statusTimeValueCompleteTask = "loading";
+      })
+      .addCase(
+        setTimeValueCompleteTask.fulfilled,
+        (state, action: PayloadAction<any>) => {
+          (state.statusTimeValueCompleteTask = "succeeded"),
+            (state.data = action.payload);
+        }
+      )
+      .addCase(setTimeValueCompleteTask.rejected, (state, action) => {
+        (state.statusTimeValueCompleteTask = "failed"),
+          (state.error = action.error.message || "Error");
       });
   },
 });

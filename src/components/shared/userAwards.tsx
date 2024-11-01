@@ -75,7 +75,6 @@ export default function UserAwards({ user }: IUsers) {
                 ))
             : filteredRewards.map((reward) => {
                 const isRewardObtained = obtainedRewardIds.includes(reward.id);
-
                 return (
                   <div
                     className="flex relative cursor-pointer group"

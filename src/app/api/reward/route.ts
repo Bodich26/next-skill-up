@@ -1,15 +1,15 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "../../../../prisma/prisma-client";
 
 export async function GET() {
   return getListRewards();
 }
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   return postAwardToUser(req);
 }
 
-export async function DELETE(req: Request) {
+export async function DELETE(req: NextRequest) {
   return deleteAwardToUser(req);
 }
 

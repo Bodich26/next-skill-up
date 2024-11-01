@@ -2,7 +2,8 @@ import { Task } from "@prisma/client";
 import { axiosInstance } from "./instance";
 
 export const getTasksList = async () => {
-  const { data } = await axiosInstance.get<Task[]>("/tasks");
+  const response = await axiosInstance.get<Task[]>("/tasks");
+  const data = await response.data;
   return data;
 };
 
@@ -45,6 +46,20 @@ export const completeTaskToUser = async (
     return data;
   } catch (error) {
     console.error("Error completed task:", error);
+    throw error;
+  }
+};
+
+export const setStudyTimeToUser = async (time: number, userId: number) => {
+  try {
+    const { data } = await axiosInstance.put("/tasks", {
+      time,
+      userId,
+    });
+
+    return data;
+  } catch (error) {
+    console.error("Error set study time to User:", error);
     throw error;
   }
 };
