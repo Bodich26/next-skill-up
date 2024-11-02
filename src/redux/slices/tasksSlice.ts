@@ -157,7 +157,7 @@ const tasksSlice = createSlice({
         fetchTasksList.fulfilled,
         (state, action: PayloadAction<Task[]>) => {
           state.statusTasksList = "succeeded";
-          state.data = Array.isArray(action.payload) ? action.payload : [];
+          state.data = action.payload;
         }
       )
       .addCase(fetchTasksList.rejected, (state, action) => {
@@ -190,13 +190,10 @@ const tasksSlice = createSlice({
       .addCase(
         completedUserTask.fulfilled,
         (state, action: PayloadAction<Task>) => {
-          state.statusCompletedUserTask = "succeeded";
-          const task = state.data.find(
-            (task) => task.idTask === action.payload.idTask
-          );
-          if (task) {
-            task.completed = action.payload.completed;
-          }
+          (state.statusCompletedUserTask = "succeeded"),
+            (state.data = state.data.filter(
+              (task) => task.completed !== action.payload.completed
+            ));
         }
       )
       .addCase(completedUserTask.rejected, (state, action) => {

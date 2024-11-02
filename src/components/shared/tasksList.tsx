@@ -71,6 +71,7 @@ export const TasksList: React.FC<Props> = () => {
         toast.error("Error while executing task 😞");
       }
     } catch (error) {
+      console.error("Error in handleCompleteTask:", error);
       toast.error("An error occurred while completed the task 😞");
     } finally {
       toast.dismiss(loadingToastId);
