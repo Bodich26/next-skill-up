@@ -178,7 +178,9 @@ export async function updateStudyTimesUser(req: NextRequest) {
         },
       },
     });
-    return NextResponse.json({ message: "Study times updated successfully" });
+
+    const updatedTasks = await prisma.task.findMany({ where: { userId } });
+    return NextResponse.json(updatedTasks);
   } catch (error) {
     console.error("Error update study times for  user:", error);
     return NextResponse.error();

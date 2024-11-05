@@ -12,3 +12,4 @@ export { SkeletonUser } from "./skeletonUser";
 export { SkeletonAward } from "./skeletonAward";
 export { RemoveAward } from "./removeAward";
 export { SkeletonTask } from "./skeletonTask";
+export { FilteredTasks } from "./filteredTasks";

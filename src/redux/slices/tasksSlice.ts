@@ -14,9 +14,37 @@ interface TasksState {
   statusRemoveUserTask: "idle" | "loading" | "succeeded" | "failed";
   statusCompletedUserTask: "idle" | "loading" | "succeeded" | "failed";
   statusTimeValueCompleteTask: "idle" | "loading" | "succeeded" | "failed";
+  sortOrder: "easyToHard" | "hardToEasy";
   error: string | null;
   form: TaskFormState;
 }
+
+interface IDifficulty {
+  [key: string]: number;
+}
+
+const difficultyOrder: IDifficulty = {
+  "easy layout": 1,
+  "easy app": 1,
+  "learning info": 1,
+  "medium layout": 2,
+  "medium app": 2,
+  "hard layout": 3,
+  "hard app": 3,
+};
+
+const sortTasks = (tasks: Task[], sortOrder: "easyToHard" | "hardToEasy") => {
+  return [...tasks].sort((a, b) => {
+    const difficultyA =
+      difficultyOrder[a.difficulty.toLowerCase()] || difficultyOrder.medium;
+    const difficultyB =
+      difficultyOrder[b.difficulty.toLowerCase()] || difficultyOrder.medium;
+
+    return sortOrder === "easyToHard"
+      ? difficultyA - difficultyB
+      : difficultyB - difficultyA;
+  });
+};
 
 export const fetchTasksList = createAsyncThunk(
   "tasks/fetchTasksList",
@@ -114,6 +142,7 @@ const initialState: TasksState = {
   statusRemoveUserTask: "idle",
   statusCompletedUserTask: "idle",
   statusTimeValueCompleteTask: "idle",
+  sortOrder: "easyToHard",
   error: null,
   form: {
     taskName: "",
@@ -133,12 +162,18 @@ const tasksSlice = createSlice({
     },
     deleteTask(state, action: PayloadAction<string>) {
       state.data = state.data.filter((task) => task.idTask !== action.payload);
+      state.data = sortTasks(state.data, state.sortOrder);
     },
     completedTask(state, action: PayloadAction<string>) {
       const task = state.data.find((task) => task.idTask === action.payload);
       if (task) {
         task.completed = true;
       }
+      state.data = sortTasks(state.data, state.sortOrder);
+    },
+    filterTask(state, action: PayloadAction<"easyToHard" | "hardToEasy">) {
+      state.sortOrder = action.payload;
+      state.data = sortTasks(state.data, state.sortOrder);
     },
   },
   extraReducers: (builder) => {
@@ -148,6 +183,7 @@ const tasksSlice = createSlice({
         addNewTaskToUser.fulfilled,
         (state, action: PayloadAction<Task>) => {
           state.data.unshift(action.payload);
+          state.data = sortTasks(state.data, state.sortOrder);
         }
       )
       .addCase(fetchTasksList.pending, (state) => {
@@ -158,6 +194,7 @@ const tasksSlice = createSlice({
         (state, action: PayloadAction<Task[]>) => {
           state.statusTasksList = "succeeded";
           state.data = action.payload;
+          state.data = sortTasks(state.data, state.sortOrder);
         }
       )
       .addCase(fetchTasksList.rejected, (state, action) => {
@@ -176,6 +213,7 @@ const tasksSlice = createSlice({
             (state.data = state.data.filter(
               (task) => task.idTask !== action.payload.idTask
             ));
+          state.data = sortTasks(state.data, state.sortOrder);
         }
       )
       .addCase(removeUserTask.rejected, (state, action) => {
@@ -194,6 +232,7 @@ const tasksSlice = createSlice({
             (state.data = state.data.filter(
               (task) => task.completed !== action.payload.completed
             ));
+          state.data = sortTasks(state.data, state.sortOrder);
         }
       )
       .addCase(completedUserTask.rejected, (state, action) => {
@@ -210,6 +249,7 @@ const tasksSlice = createSlice({
         (state, action: PayloadAction<any>) => {
           (state.statusTimeValueCompleteTask = "succeeded"),
             (state.data = action.payload);
+          state.data = sortTasks(state.data, state.sortOrder);
         }
       )
       .addCase(setTimeValueCompleteTask.rejected, (state, action) => {
@@ -219,6 +259,11 @@ const tasksSlice = createSlice({
   },
 });
 
-export const { setTaskName, setTaskDifficulty, deleteTask, completedTask } =
-  tasksSlice.actions;
+export const {
+  setTaskName,
+  setTaskDifficulty,
+  deleteTask,
+  completedTask,
+  filterTask,
+} = tasksSlice.actions;
 export default tasksSlice.reducer;

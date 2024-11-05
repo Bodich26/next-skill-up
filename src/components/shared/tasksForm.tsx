@@ -47,9 +47,9 @@ export const TasksForm: React.FC<Props> = ({ className }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const loadingCreateTask = toast.loading("Loading...");
 
     if (taskName && taskDifficulty) {
+      const loadingCreateTask = toast.loading("Loading...");
       const userId = 1;
       const newTask = {
         userId,
