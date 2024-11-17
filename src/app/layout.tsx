@@ -1,6 +1,7 @@
 import { Open_Sans, PT_Sans } from "next/font/google";
 import { Metadata } from "next";
 import "./globals.css";
+import { Providers } from "@/components/shared/providers";
 
 const openSans = Open_Sans({
   subsets: ["cyrillic"],
@@ -30,7 +31,7 @@ export default function RootLayout({
         <link data-rh="true" rel="icon" href="/logo.png" />
       </head>
       <body className={`${openSans.className} ${ptSans.variable}`}>
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

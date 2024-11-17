@@ -8,7 +8,7 @@ export const getTasksList = async () => {
 };
 
 export const postNewTaskToUser = async (
-  userId: number,
+  userId: string,
   taskName: string,
   taskDifficulty: string,
   completed: boolean
@@ -50,7 +50,7 @@ export const completeTaskToUser = async (
   }
 };
 
-export const setStudyTimeToUser = async (time: number, userId: number) => {
+export const setStudyTimeToUser = async (time: number, userId: string) => {
   try {
     const { data } = await axiosInstance.put("/tasks", {
       time,

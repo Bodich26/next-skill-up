@@ -1,3 +1,5 @@
+// Ваши текущие модели
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -16,17 +18,22 @@ enum Role {
 }
 
 model User {
-  id            Int        @id @default(autoincrement())
+  id            String     @id @default(cuid())
   name          String
   email         String     @unique
+  emailVerified DateTime? 
+  image         String?
+
   password      String
   role          Role
   rating        Int
   studyTimes    Int
   taskCompleted Int
   iconRating    String
+
   tasks         Task[]
-  
+  sessions      Session[]
+  accounts      Account[]
   awards        UserReward[]
   leaderboard   Leaderboard[]
 
@@ -34,15 +41,47 @@ model User {
   updatedAt     DateTime @updatedAt
 }
 
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String? @db.Text
+  access_token       String? @db.Text
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String? @db.Text
+  session_state      String?
+
+  user               User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String @unique
+  expires    DateTime
+  @@unique([identifier, token])
+}
+
 model UserReward {
   user      User   @relation(fields: [userId], references: [id])
-  userId    Int
+  userId    String
   reward    Reward @relation(fields: [rewardId], references: [id])
   rewardId  Int
-
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
-
   @@id([userId, rewardId])
 }
 
@@ -53,7 +92,6 @@ model Reward {
   description  String
   points       Int
   role         Role
-
   awardedTo    UserReward[]
 }
 
@@ -64,21 +102,16 @@ model Task {
   points       Int    
   difficulty   String
   completed    Boolean @default(false)
-
   user         User   @relation(fields: [userId], references: [id])
-  userId       Int
-
+  userId       String
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }
 
-
 model Leaderboard {
   id            Int    @id @default(autoincrement())
-
   user          User   @relation(fields: [userId], references: [id])
-  userId        Int    
-
+  userId        String    
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }

@@ -22,17 +22,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useRouter } from "next/navigation";
+import axios from "axios";
+import { signIn } from "next-auth/react";
 
 const regForm = z
   .object({
     emailAddress: z.string().email(),
-    nickName: z.string().min(3),
-    accountType: z.enum([
-      "Front-End",
-      "Back-End",
-      "Ui/Ux Designer",
-      "CG-Artist",
-    ]),
+    name: z.string().min(3),
+    accountType: z.enum(["FRONT_END", "BACK_END", "UI_UX_DESIGN", "CG_ARTIST"]),
     password: z.string().min(3),
     passwordConfirm: z.string(),
   })
@@ -48,21 +46,37 @@ const loginForm = z.object({
   password: z.string().min(3),
 });
 
-export default function login() {
+export default function Login() {
   const [switchForm, setSwitchForm] = React.useState<boolean>(true);
+  const router = useRouter();
 
   const createAccount = useForm<z.infer<typeof regForm>>({
     resolver: zodResolver(regForm),
     defaultValues: {
-      nickName: "",
+      name: "",
       emailAddress: "",
       password: "",
       passwordConfirm: "",
     },
   });
 
-  const handleSubmitCreateAccount = (values: z.infer<typeof regForm>) => {
-    console.log({ values });
+  const handleSubmitCreateAccount = async (values: z.infer<typeof regForm>) => {
+    try {
+      const response = await axios.post("/api/auth/register", {
+        name: values.name,
+        email: values.emailAddress,
+        password: values.password,
+        role: values.accountType,
+      });
+
+      if (response.status === 200) {
+        router.push("/dashboard");
+      } else {
+        console.error(response.data.error || "Registration failed");
+      }
+    } catch (error: any) {
+      console.error(error.response?.data?.error || "Registration failed");
+    }
   };
 
   const login = useForm<z.infer<typeof loginForm>>({
@@ -73,8 +87,21 @@ export default function login() {
     },
   });
 
-  const handleSubmitLogin = (values: z.infer<typeof loginForm>) => {
-    console.log({ values });
+  const handleSubmitLogin = async (values: z.infer<typeof loginForm>) => {
+    try {
+      const response = await axios.post("/api/auth/login", {
+        email: values.emailAddress,
+        password: values.password,
+      });
+
+      if (response.status === 200) {
+        router.push("/dashboard");
+      } else {
+        console.error(response.data.error || "Login failed");
+      }
+    } catch (error: any) {
+      console.error(error.response?.data?.error || "Login failed");
+    }
   };
 
   return (
@@ -82,7 +109,7 @@ export default function login() {
       {switchForm ? (
         <section key="login-form" className="flex items-center justify-center">
           <Container>
-            <div className="pt-40 pb-60">
+            <div className="pt-40 pb-10">
               <Form {...login}>
                 <form
                   className=" flex flex-col gap-4 p-4 border-[1px] border-solid border-input bg-card rounded-lg"
@@ -146,7 +173,16 @@ export default function login() {
                       );
                     }}
                   />
-                  <Button className=" mt-[10px]" type="submit">
+                  <Button
+                    className=" mt-[10px]"
+                    type="submit"
+                    onClick={() =>
+                      signIn("email", {
+                        callbackUrl: "/dashboard",
+                        redirect: true,
+                      })
+                    }
+                  >
                     Login
                   </Button>
                 </form>
@@ -198,14 +234,14 @@ export default function login() {
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              <SelectItem value="Front-End">
+                              <SelectItem value="FRONT_END">
                                 Front-End
                               </SelectItem>
-                              <SelectItem value="Back-End">Back-End</SelectItem>
-                              <SelectItem value="Ui/Ux Designer">
+                              <SelectItem value="BACK_END">Back-End</SelectItem>
+                              <SelectItem value="UI_UX_DESIGN">
                                 Ui/Ux Designer
                               </SelectItem>
-                              <SelectItem value="CG-Artist">
+                              <SelectItem value="CG_ARTIST">
                                 CG-Artist
                               </SelectItem>
                             </SelectContent>
@@ -216,18 +252,18 @@ export default function login() {
                     }}
                   />
                   <FormField
-                    name="nickName"
+                    name="name"
                     control={createAccount.control}
                     render={({ field }) => {
                       return (
                         <FormItem>
                           <FormLabel className="text-lg font-semibold">
-                            Nick
+                            Name
                           </FormLabel>
                           <FormControl>
                             <Input
                               className="w-80 h-10"
-                              placeholder="your nick"
+                              placeholder="your name"
                               type="text"
                               {...field}
                             />
@@ -303,7 +339,16 @@ export default function login() {
                       );
                     }}
                   />
-                  <Button className=" mt-[10px]" type="submit">
+                  <Button
+                    className=" mt-[10px]"
+                    type="submit"
+                    onClick={() =>
+                      signIn("email", {
+                        callbackUrl: "/dashboard",
+                        redirect: true,
+                      })
+                    }
+                  >
                     Create
                   </Button>
                 </form>

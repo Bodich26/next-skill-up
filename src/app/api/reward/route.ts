@@ -13,7 +13,7 @@ export async function DELETE(req: NextRequest) {
   return deleteAwardToUser(req);
 }
 
-async function formatUserAwards(userId: number) {
+async function formatUserAwards(userId: string) {
   const userWithAwards = await prisma.user.findUnique({
     where: { id: userId },
     include: {

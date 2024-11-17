@@ -10,7 +10,7 @@ import { toast } from "sonner";
 interface Props {
   className?: string;
   rewardId: number;
-  userId: number;
+  userId: string;
 }
 
 export const RemoveAward: React.FC<Props> = ({
@@ -20,7 +20,7 @@ export const RemoveAward: React.FC<Props> = ({
 }) => {
   const dispatch = useAppDispatch();
 
-  const handleRemoveAwards = async (rewardId: number, userId: number) => {
+  const handleRemoveAwards = async (rewardId: number, userId: string) => {
     const loadingToastId = toast.loading("Loading...");
 
     try {

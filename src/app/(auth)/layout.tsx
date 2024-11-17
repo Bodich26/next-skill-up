@@ -14,9 +14,9 @@ export default function AuthLayout({
   return (
     <>
       <header></header>
-      <main className="min-h-screen">{children}</main>
-      <footer>
-        <Container>©Сreator and Author by Bodich</Container>
+      <main className="">{children}</main>
+      <footer className="">
+        {/* <Container>©Сreator and Author by Bodich</Container> */}
       </footer>
     </>
   );

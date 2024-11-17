@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { Api } from "../../../services/api-client";
-import { User } from "@/type/user";
+import { User } from "@prisma/client";
 
 interface IInitial {
   data: User | null;
@@ -10,7 +10,7 @@ interface IInitial {
 
 export const fetchUser = createAsyncThunk(
   "user/fetchUser",
-  async (userId: number) => {
+  async (userId: string) => {
     try {
       const response = await Api.users.user(userId);
       console.log("User from server:", response);

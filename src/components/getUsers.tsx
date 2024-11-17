@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
@@ -17,7 +16,7 @@ export const GetUsers = () => {
   } = useSelector((state: RootState) => state.user);
 
   useEffect(() => {
-    dispatch(fetchUser(1));
+    dispatch(fetchUser("1"));
   }, [dispatch]);
 
   return (

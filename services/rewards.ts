@@ -11,7 +11,7 @@ export const getListRewards = async () => {
   return data;
 };
 
-export const postRewardToUser = async (userId: number, rewardId: number) => {
+export const postRewardToUser = async (userId: string, rewardId: number) => {
   const { data } = await axiosInstance.post(`/reward`, {
     userId,
     rewardId,
@@ -19,7 +19,7 @@ export const postRewardToUser = async (userId: number, rewardId: number) => {
   return data;
 };
 
-export const deleteRewardToUser = async (userId: number, rewardId: number) => {
+export const deleteRewardToUser = async (userId: string, rewardId: number) => {
   const { data } = await axiosInstance.delete(`/reward`, {
     data: {
       userId,

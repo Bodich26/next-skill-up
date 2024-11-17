@@ -2,7 +2,7 @@
 import React from "react";
 import { UserType } from "@/type";
 import Image from "next/image";
-import { AddAwardPopUp, Skeleton, Toaster } from "../ui";
+import { AddAwardPopUp, Skeleton } from "../ui";
 import { useAppDispatch } from "@/redux/hooks/useAppDispatch";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
@@ -41,7 +41,7 @@ export default function UserAwards({ user }: IUsers) {
     ? reward.filter((r) => r.role === user?.role)
     : [];
 
-  const handleAwardPopUp = async (userId: number, rewardId: number) => {
+  const handleAwardPopUp = async (userId: string, rewardId: number) => {
     const loadingToastId = toast.loading("Loading...");
 
     try {
@@ -116,7 +116,6 @@ export default function UserAwards({ user }: IUsers) {
               })}
         </div>
       </div>
-      <Toaster position="bottom-left" expand={false} />
     </div>
   );
 }

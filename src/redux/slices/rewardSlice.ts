@@ -29,7 +29,7 @@ export const fetchRewards = createAsyncThunk<Reward[]>(
 
 export const addRewardToUser = createAsyncThunk(
   "reward/addRewardToUser",
-  async ({ userId, rewardId }: { userId: number; rewardId: number }) => {
+  async ({ userId, rewardId }: { userId: string; rewardId: number }) => {
     try {
       const response = await Api.rewards.postRewardToUser(userId, rewardId);
       console.log("Reward from server:", response);
@@ -43,7 +43,7 @@ export const addRewardToUser = createAsyncThunk(
 
 export const removeRewardToUser = createAsyncThunk(
   "reward/removeRewardToUser",
-  async ({ userId, rewardId }: { userId: number; rewardId: number }) => {
+  async ({ userId, rewardId }: { userId: string; rewardId: number }) => {
     try {
       const response = await Api.rewards.deleteRewardToUser(userId, rewardId);
       console.log("Reward from server:", response);

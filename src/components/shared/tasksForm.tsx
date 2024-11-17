@@ -9,7 +9,7 @@ import {
 } from "../../redux/slices/tasksSlice";
 
 import { useResetFilter } from "@/hooks";
-import { Button, Input, Select, Toaster } from "../ui";
+import { Button, Input, Select } from "../ui";
 import {
   SelectContent,
   SelectItem,
@@ -50,7 +50,8 @@ export const TasksForm: React.FC<Props> = ({ className }) => {
 
     if (taskName && taskDifficulty) {
       const loadingCreateTask = toast.loading("Loading...");
-      const userId = 1;
+      const userId = "1";
+
       const newTask = {
         userId,
         name: taskName,
@@ -120,7 +121,6 @@ export const TasksForm: React.FC<Props> = ({ className }) => {
           Add Task
         </Button>
       </form>
-      <Toaster position="bottom-left" expand={false} />
     </div>
   );
 };

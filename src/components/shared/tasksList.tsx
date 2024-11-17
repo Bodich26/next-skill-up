@@ -12,6 +12,7 @@ import {
   completedUserTask,
   fetchTasksList,
   filterTask,
+  filterTaskToComplete,
   removeUserTask,
 } from "@/redux/slices/tasksSlice";
 import { cn } from "@/lib/utils";
@@ -24,10 +25,11 @@ interface Props {}
 export const TasksList: React.FC<Props> = () => {
   const [isLoading, setIsLoading] = React.useState<boolean>(true);
   const { filterName, handleFilterName } = useFilterName("");
-  const { data: tasks, statusTasksList } = useSelector(
-    (state: RootState) => state.tasks
-  );
-
+  const {
+    data: tasks,
+    filterTasks,
+    statusTasksList,
+  } = useSelector((state: RootState) => state.tasks);
   const dispatch = useAppDispatch();
 
   React.useEffect(() => {
@@ -39,12 +41,11 @@ export const TasksList: React.FC<Props> = () => {
     loadingTasks();
   }, [dispatch]);
 
+  //--Delete Task
   const handleDeleteTask = async (idTask: string) => {
     const loadingToastId = toast.loading("Loading...");
-
     try {
       const resultAction = await dispatch(removeUserTask({ idTask }));
-
       if (removeUserTask.fulfilled.match(resultAction)) {
         await dispatch(fetchTasksList());
         toast.success("Task remove successfully!");
@@ -58,14 +59,13 @@ export const TasksList: React.FC<Props> = () => {
     }
   };
 
+  //--Complete Task
   const handleCompleteTask = async (idTask: string, completed: boolean) => {
     const loadingToastId = toast.loading("Loading...");
-
     try {
       const resultAction = await dispatch(
         completedUserTask({ idTask, completed })
       );
-
       if (completedUserTask.fulfilled.match(resultAction)) {
         await dispatch(fetchTasksList());
         toast.success("Task completed successfully!");
@@ -80,8 +80,15 @@ export const TasksList: React.FC<Props> = () => {
     }
   };
 
+  //--Filtered Task
   const handleFilterToDifficulty = (order: "easyToHard" | "hardToEasy") => {
     dispatch(filterTask(order));
+  };
+
+  const handleFilterToCompleteTasks = (
+    completed: "all" | "complete" | "available"
+  ) => {
+    dispatch(filterTaskToComplete(completed));
   };
 
   return (
@@ -89,7 +96,10 @@ export const TasksList: React.FC<Props> = () => {
       <div className=" flex items-center justify-between">
         <div className="flex items-center gap-10">
           <h3 className="font-bold text-3xl">Tasks List</h3>
-          <FilteredTasks onSortChange={handleFilterToDifficulty} />
+          <FilteredTasks
+            onCheckCompleteTask={handleFilterToCompleteTasks}
+            onSortChange={handleFilterToDifficulty}
+          />
         </div>
         <div className="flex items-center gap-3">
           <Search />
@@ -112,7 +122,7 @@ export const TasksList: React.FC<Props> = () => {
           // eslint-disable-next-line react/no-unescaped-entities
           <p className="text-center text-xl">You don't have any tasks 😞</p>
         ) : (
-          tasks
+          filterTasks
             .filter((task) => task.name.toLowerCase().includes(filterName))
             .map((task) => (
               <TaskItem

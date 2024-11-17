@@ -12,9 +12,13 @@ import { PopoverContent, PopoverTrigger } from "../ui/popover";
 
 interface IProps {
   onSortChange: (order: "easyToHard" | "hardToEasy") => void;
+  onCheckCompleteTask: (completed: "all" | "complete" | "available") => void;
 }
 
-export const FilteredTasks = ({ onSortChange }: IProps) => {
+export const FilteredTasks = ({
+  onSortChange,
+  onCheckCompleteTask,
+}: IProps) => {
   const [isOpenFilter, setIsOpenFilter] = React.useState(false);
 
   const handleFilterOpen = () => setIsOpenFilter(true);
@@ -28,11 +32,20 @@ export const FilteredTasks = ({ onSortChange }: IProps) => {
     handleFilterClose();
     onSortChange("hardToEasy");
   };
+  const handleResetFilter = () => {
+    onCheckCompleteTask("all");
+  };
 
   return (
     <div className=" flex items-center gap-3">
-      <ClipboardCheck className="cursor-pointer hover:text-primary duration-150" />
-      <ClipboardList className="cursor-pointer hover:text-primary duration-150" />
+      <ClipboardCheck
+        className="cursor-pointer hover:text-primary duration-150"
+        onClick={() => onCheckCompleteTask("complete")}
+      />
+      <ClipboardList
+        className="cursor-pointer hover:text-primary duration-150"
+        onClick={() => onCheckCompleteTask("available")}
+      />
       <Popover open={isOpenFilter} onOpenChange={setIsOpenFilter}>
         <PopoverTrigger>
           <ArrowUpDown
@@ -57,7 +70,10 @@ export const FilteredTasks = ({ onSortChange }: IProps) => {
           </p>
         </PopoverContent>
       </Popover>
-      <RefreshCcw className="cursor-pointer hover:text-primary duration-150" />
+      <RefreshCcw
+        className="cursor-pointer hover:text-primary duration-150"
+        onClick={handleResetFilter}
+      />
     </div>
   );
 };

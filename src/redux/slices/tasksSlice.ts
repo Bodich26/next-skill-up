@@ -2,6 +2,7 @@ import { Difficulty } from "@/type";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Api } from "../../../services/api-client";
 import { Task } from "@prisma/client";
+import { date } from "zod";
 
 interface TaskFormState {
   taskName: string;
@@ -10,11 +11,13 @@ interface TaskFormState {
 
 interface TasksState {
   data: Task[];
+  filterTasks: Task[];
   statusTasksList: "idle" | "loading" | "succeeded" | "failed";
   statusRemoveUserTask: "idle" | "loading" | "succeeded" | "failed";
   statusCompletedUserTask: "idle" | "loading" | "succeeded" | "failed";
   statusTimeValueCompleteTask: "idle" | "loading" | "succeeded" | "failed";
   sortOrder: "easyToHard" | "hardToEasy";
+  sortByCompleted: "all" | "complete" | "available";
   error: string | null;
   form: TaskFormState;
 }
@@ -31,19 +34,6 @@ const difficultyOrder: IDifficulty = {
   "medium app": 2,
   "hard layout": 3,
   "hard app": 3,
-};
-
-const sortTasks = (tasks: Task[], sortOrder: "easyToHard" | "hardToEasy") => {
-  return [...tasks].sort((a, b) => {
-    const difficultyA =
-      difficultyOrder[a.difficulty.toLowerCase()] || difficultyOrder.medium;
-    const difficultyB =
-      difficultyOrder[b.difficulty.toLowerCase()] || difficultyOrder.medium;
-
-    return sortOrder === "easyToHard"
-      ? difficultyA - difficultyB
-      : difficultyB - difficultyA;
-  });
 };
 
 export const fetchTasksList = createAsyncThunk(
@@ -70,7 +60,7 @@ export const addNewTaskToUser = createAsyncThunk(
       difficulty,
       completed,
     }: {
-      userId: number;
+      userId: string;
       name: string;
       difficulty: Difficulty;
       completed: boolean;
@@ -124,7 +114,7 @@ export const completedUserTask = createAsyncThunk(
 
 export const setTimeValueCompleteTask = createAsyncThunk(
   "tasks/setTimeValueCompleteTask",
-  async ({ time, userId }: { time: number; userId: number }) => {
+  async ({ time, userId }: { time: number; userId: string }) => {
     try {
       const response = await Api.tasksList.setStudyTimeToUser(time, userId);
       console.log("Task from server:", response);
@@ -136,13 +126,39 @@ export const setTimeValueCompleteTask = createAsyncThunk(
   }
 );
 
+const sortTasks = (tasks: Task[], sortOrder: "easyToHard" | "hardToEasy") => {
+  return tasks.sort((a, b) => {
+    const difficultyA =
+      difficultyOrder[a.difficulty.toLowerCase()] || difficultyOrder.medium;
+    const difficultyB =
+      difficultyOrder[b.difficulty.toLowerCase()] || difficultyOrder.medium;
+
+    return sortOrder === "easyToHard"
+      ? difficultyA - difficultyB
+      : difficultyB - difficultyA;
+  });
+};
+
+const sortTasksCompleted = (
+  tasks: Task[],
+  sortByCompleted: "all" | "complete" | "available"
+) => {
+  if (sortByCompleted === "complete") {
+    return tasks.filter((task) => task.completed);
+  } else if (sortByCompleted === "available") {
+    return tasks.filter((task) => !task.completed);
+  } else return tasks;
+};
+
 const initialState: TasksState = {
   data: [],
+  filterTasks: [],
   statusTasksList: "idle",
   statusRemoveUserTask: "idle",
   statusCompletedUserTask: "idle",
   statusTimeValueCompleteTask: "idle",
   sortOrder: "easyToHard",
+  sortByCompleted: "all",
   error: null,
   form: {
     taskName: "",
@@ -162,18 +178,30 @@ const tasksSlice = createSlice({
     },
     deleteTask(state, action: PayloadAction<string>) {
       state.data = state.data.filter((task) => task.idTask !== action.payload);
-      state.data = sortTasks(state.data, state.sortOrder);
     },
     completedTask(state, action: PayloadAction<string>) {
       const task = state.data.find((task) => task.idTask === action.payload);
       if (task) {
         task.completed = true;
       }
-      state.data = sortTasks(state.data, state.sortOrder);
+
+      const taskFilter = state.filterTasks.find(
+        (task) => task.idTask === action.payload
+      );
+      if (taskFilter) {
+        taskFilter.completed = true;
+      }
     },
     filterTask(state, action: PayloadAction<"easyToHard" | "hardToEasy">) {
       state.sortOrder = action.payload;
-      state.data = sortTasks(state.data, state.sortOrder);
+      state.filterTasks = sortTasks([...state.data], action.payload);
+    },
+    filterTaskToComplete(
+      state,
+      action: PayloadAction<"all" | "complete" | "available">
+    ) {
+      state.sortByCompleted = action.payload;
+      state.filterTasks = sortTasksCompleted([...state.data], action.payload);
     },
   },
   extraReducers: (builder) => {
@@ -183,7 +211,13 @@ const tasksSlice = createSlice({
         addNewTaskToUser.fulfilled,
         (state, action: PayloadAction<Task>) => {
           state.data.unshift(action.payload);
-          state.data = sortTasks(state.data, state.sortOrder);
+
+          if (
+            state.sortByCompleted === "available" ||
+            state.sortByCompleted === "all"
+          ) {
+            state.filterTasks.unshift(action.payload);
+          }
         }
       )
       .addCase(fetchTasksList.pending, (state) => {
@@ -194,7 +228,7 @@ const tasksSlice = createSlice({
         (state, action: PayloadAction<Task[]>) => {
           state.statusTasksList = "succeeded";
           state.data = action.payload;
-          state.data = sortTasks(state.data, state.sortOrder);
+          state.filterTasks = action.payload;
         }
       )
       .addCase(fetchTasksList.rejected, (state, action) => {
@@ -209,11 +243,13 @@ const tasksSlice = createSlice({
       .addCase(
         removeUserTask.fulfilled,
         (state, action: PayloadAction<Task>) => {
-          (state.statusRemoveUserTask = "succeeded"),
-            (state.data = state.data.filter(
-              (task) => task.idTask !== action.payload.idTask
-            ));
-          state.data = sortTasks(state.data, state.sortOrder);
+          state.data = state.data.filter(
+            (task) => task.idTask !== action.payload.idTask
+          );
+
+          state.filterTasks = state.data.filter(
+            (task) => task.idTask !== action.payload.idTask
+          );
         }
       )
       .addCase(removeUserTask.rejected, (state, action) => {
@@ -228,11 +264,12 @@ const tasksSlice = createSlice({
       .addCase(
         completedUserTask.fulfilled,
         (state, action: PayloadAction<Task>) => {
-          (state.statusCompletedUserTask = "succeeded"),
-            (state.data = state.data.filter(
-              (task) => task.completed !== action.payload.completed
-            ));
-          state.data = sortTasks(state.data, state.sortOrder);
+          state.data = state.data.filter(
+            (task) => task.idTask !== action.payload.idTask
+          );
+          state.filterTasks = state.filterTasks.filter(
+            (task) => task.idTask !== action.payload.idTask
+          );
         }
       )
       .addCase(completedUserTask.rejected, (state, action) => {
@@ -249,7 +286,7 @@ const tasksSlice = createSlice({
         (state, action: PayloadAction<any>) => {
           (state.statusTimeValueCompleteTask = "succeeded"),
             (state.data = action.payload);
-          state.data = sortTasks(state.data, state.sortOrder);
+          state.filterTasks = action.payload;
         }
       )
       .addCase(setTimeValueCompleteTask.rejected, (state, action) => {
@@ -265,5 +302,6 @@ export const {
   deleteTask,
   completedTask,
   filterTask,
+  filterTaskToComplete,
 } = tasksSlice.actions;
 export default tasksSlice.reducer;
