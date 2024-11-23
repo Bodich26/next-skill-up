@@ -3,6 +3,8 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 
 import { Button, Input } from "@/components/ui";
 import { Container } from "@/components/shared";
@@ -14,49 +16,46 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import axios from "axios";
-import { useRouter } from "next/navigation";
 import { FormError } from "./formError";
 import { FormSuccess } from "./formSuccess";
+import { LoginSchema } from "./loginSchema";
 
 interface IProps {
   switchForm: () => void;
 }
 
-const loginForm = z.object({
-  emailAddress: z.string().email({
-    message: "Email is required",
-  }),
-  password: z.string().min(3, {
-    message: "Password is required",
-  }),
-});
-
 export const FormLogin: React.FC<IProps> = ({ switchForm }) => {
+  const [error, setError] = React.useState<string | undefined>("");
+  const [success, setSuccess] = React.useState<string | undefined>("");
+
   const router = useRouter();
 
-  const login = useForm<z.infer<typeof loginForm>>({
-    resolver: zodResolver(loginForm),
+  const login = useForm<z.infer<typeof LoginSchema>>({
+    resolver: zodResolver(LoginSchema),
     defaultValues: {
-      emailAddress: "",
+      email: "",
       password: "",
     },
   });
 
-  const handleSubmitLogin = async (values: z.infer<typeof loginForm>) => {
+  const handleSubmitLogin = async (values: z.infer<typeof LoginSchema>) => {
+    setError("");
+    setSuccess("");
+
     try {
       const response = await axios.post("/api/auth/login", {
-        email: values.emailAddress,
+        email: values.email,
         password: values.password,
       });
 
       if (response.status === 200) {
+        setSuccess("Login successful!");
         router.push("/dashboard");
       } else {
-        console.error(response.data.error || "Login failed");
+        setError(response.data.error || "Login failed.");
       }
     } catch (error: any) {
-      console.error(error.response?.data?.error || "Login failed");
+      setError(error.response?.data?.error || "Login failed.");
     }
   };
 
@@ -84,7 +83,7 @@ export const FormLogin: React.FC<IProps> = ({ switchForm }) => {
                 </p>
               </div>
               <FormField
-                name="emailAddress"
+                name="email"
                 control={login.control}
                 render={({ field }) => {
                   return (
@@ -127,8 +126,8 @@ export const FormLogin: React.FC<IProps> = ({ switchForm }) => {
                   );
                 }}
               />
-              <FormError message="" />
-              <FormSuccess message="" />
+              <FormError message={error} />
+              <FormSuccess message={success} />
               <Button
                 className=" mt-[10px]"
                 type="submit"

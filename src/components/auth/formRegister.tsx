@@ -4,6 +4,8 @@ import React from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { useRouter } from "next/navigation";
+import { registerUser } from "../../../services/auth";
 
 import { Button, Input, Select } from "@/components/ui";
 import { Container } from "@/components/shared";
@@ -21,57 +23,56 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import axios from "axios";
-import { useRouter } from "next/navigation";
+import { FormError } from "./formError";
+import { FormSuccess } from "./formSuccess";
+import { RegisterSchema } from "./registerSchema";
 
 interface IProps {
   switchForm: () => void;
 }
 
-const regForm = z
-  .object({
-    emailAddress: z.string().email(),
-    name: z.string().min(3),
-    accountType: z.enum(["FRONT_END", "BACK_END", "UI_UX_DESIGN", "CG_ARTIST"]),
-    password: z.string().min(3),
-    passwordConfirm: z.string(),
-  })
-  .refine(
-    (data) => {
-      return data.password === data.passwordConfirm;
-    },
-    { message: "Password do not match", path: ["passwordConfirm"] }
-  );
-
 export const FormRegister: React.FC<IProps> = ({ switchForm }) => {
+  const [error, setError] = React.useState<string | undefined>("");
+  const [success, setSuccess] = React.useState<string | undefined>("");
+  const [isPending, startTransition] = React.useTransition();
+
   const router = useRouter();
-  const createAccount = useForm<z.infer<typeof regForm>>({
-    resolver: zodResolver(regForm),
+  const createAccount = useForm<z.infer<typeof RegisterSchema>>({
+    resolver: zodResolver(RegisterSchema),
     defaultValues: {
       name: "",
-      emailAddress: "",
+      email: "",
       password: "",
       passwordConfirm: "",
     },
   });
 
-  const handleSubmitCreateAccount = async (values: z.infer<typeof regForm>) => {
-    try {
-      const response = await axios.post("/api/auth/register", {
-        name: values.name,
-        email: values.emailAddress,
-        password: values.password,
-        role: values.accountType,
-      });
+  const handleSubmitCreateAccount = async (
+    values: z.infer<typeof RegisterSchema>
+  ) => {
+    setError("");
+    setSuccess("");
 
-      if (response.status === 200) {
-        router.push("/dashboard");
-      } else {
-        console.error(response.data.error || "Registration failed");
+    startTransition(async () => {
+      try {
+        const response = await registerUser({
+          role: values.role,
+          name: values.name,
+          email: values.email,
+          password: values.password,
+          passwordConfirm: values.passwordConfirm,
+        });
+
+        if (response.status === 200 || response.status === 201) {
+          setSuccess("Registration successful!");
+          router.push("/dashboard");
+        } else {
+          setError(response.data.error || "Registration failed.");
+        }
+      } catch (error: any) {
+        setError(error.response?.data?.error || "Registration failed.");
       }
-    } catch (error: any) {
-      console.error(error.response?.data?.error || "Registration failed");
-    }
+    });
   };
 
   return (
@@ -98,7 +99,7 @@ export const FormRegister: React.FC<IProps> = ({ switchForm }) => {
                 </p>
               </div>
               <FormField
-                name="accountType"
+                name="role"
                 control={createAccount.control}
                 render={({ field }) => {
                   return (
@@ -106,7 +107,10 @@ export const FormRegister: React.FC<IProps> = ({ switchForm }) => {
                       <FormLabel className="text-lg font-semibold">
                         Role
                       </FormLabel>
-                      <Select onValueChange={field.onChange}>
+                      <Select
+                        onValueChange={field.onChange}
+                        disabled={isPending}
+                      >
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="your role" />
@@ -137,6 +141,7 @@ export const FormRegister: React.FC<IProps> = ({ switchForm }) => {
                       </FormLabel>
                       <FormControl>
                         <Input
+                          disabled={isPending}
                           className="w-80 h-10"
                           placeholder="your name"
                           type="text"
@@ -149,7 +154,7 @@ export const FormRegister: React.FC<IProps> = ({ switchForm }) => {
                 }}
               />
               <FormField
-                name="emailAddress"
+                name="email"
                 control={createAccount.control}
                 render={({ field }) => {
                   return (
@@ -159,6 +164,7 @@ export const FormRegister: React.FC<IProps> = ({ switchForm }) => {
                       </FormLabel>
                       <FormControl>
                         <Input
+                          disabled={isPending}
                           className="w-80 h-10"
                           placeholder="m@example.com"
                           type="email"
@@ -181,6 +187,7 @@ export const FormRegister: React.FC<IProps> = ({ switchForm }) => {
                       </FormLabel>
                       <FormControl>
                         <Input
+                          disabled={isPending}
                           className="w-80 h-10"
                           placeholder="******"
                           type="password"
@@ -203,6 +210,7 @@ export const FormRegister: React.FC<IProps> = ({ switchForm }) => {
                       </FormLabel>
                       <FormControl>
                         <Input
+                          disabled={isPending}
                           className="w-80 h-10"
                           placeholder="******"
                           type="password"
@@ -214,7 +222,10 @@ export const FormRegister: React.FC<IProps> = ({ switchForm }) => {
                   );
                 }}
               />
+              <FormError message={error} />
+              <FormSuccess message={success} />
               <Button
+                disabled={isPending}
                 className=" mt-[10px]"
                 type="submit"
                 onClick={() => console.log("fff")}
