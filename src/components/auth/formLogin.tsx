@@ -53,6 +53,7 @@ export const FormLogin: React.FC<IProps> = ({ switchForm }) => {
         router.push("/dashboard");
       } else {
         setError(response.data.error || "Login failed.");
+        setSuccess(response.data.success);
       }
     } catch (error: any) {
       setError(error.response?.data?.error || "Login failed.");

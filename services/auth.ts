@@ -26,7 +26,10 @@ export const registerUser = async ({
     });
     return data;
   } catch (error: any) {
-    throw error.data || error;
+    if (error.response && error.response.data) {
+      throw error.response.data;
+    }
+    throw new Error(error.message || "An unexpected error occurred.");
   }
 };
 

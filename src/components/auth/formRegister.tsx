@@ -63,14 +63,15 @@ export const FormRegister: React.FC<IProps> = ({ switchForm }) => {
           passwordConfirm: values.passwordConfirm,
         });
 
-        if (response.status === 200 || response.status === 201) {
-          setSuccess("Registration successful!");
+        if (response.status === 200) {
+          setSuccess("Register successful!");
           router.push("/dashboard");
         } else {
-          setError(response.data.error || "Registration failed.");
+          setError(response.data.error || "Register failed.");
+          setSuccess(response.data.success);
         }
       } catch (error: any) {
-        setError(error.response?.data?.error || "Registration failed.");
+        setError(error.response?.data?.error || "Register failed.");
       }
     });
   };

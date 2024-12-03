@@ -4,3 +4,4 @@ export { FormRegister } from "./formRegister";
 export { FormSuccess } from "./formSuccess";
 export { RegisterSchema } from "./registerSchema";
 export { LoginSchema } from "./loginSchema";
+export { ErrorCard } from "./errorCard";

@@ -85,7 +85,7 @@ export const TimeTaskPopUp: React.FC<Props> = ({
       const resultTimeAction = await dispatch(
         setTimeValueCompleteTask({
           time: data.time,
-          userId: session.data!.user.id,
+          userId: session.data!.user!.id!,
         })
       );
 
