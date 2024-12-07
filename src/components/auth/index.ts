@@ -5,3 +5,6 @@ export { FormSuccess } from "./formSuccess";
 export { RegisterSchema } from "./registerSchema";
 export { LoginSchema } from "./loginSchema";
 export { ErrorCard } from "./errorCard";
+export { NewVerificationForm } from "./newVerificationForm";
+export { ResetForm } from "./resetForm";
+export { ResetSchema } from "./resetSchema";

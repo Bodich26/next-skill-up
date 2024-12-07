@@ -13,7 +13,7 @@ export const SignInButton = ({}: IProps) => {
       className={"mt-11 text-lg gap-x-2"}
       variant="outline"
       size="lg"
-      onClick={() => router.push("/login")}
+      onClick={() => router.push("/auth/login")}
     >
       <User size={24} />
       Login

@@ -1,4 +1,3 @@
-import { User } from "@prisma/client";
 import { axiosInstance } from "./instance";
 
 type RegisterUserInput = {
@@ -33,12 +32,27 @@ export const registerUser = async ({
   }
 };
 
-export const loginUser = async ({ email, password }: User) => {
+export const loginUser = async ({
+  email,
+  password,
+}: {
+  email: string;
+  password: string;
+}) => {
   try {
     const { data } = await axiosInstance.post(`/auth/login`, {
       email,
       password,
     });
+    return data;
+  } catch (error: any) {
+    throw error.data || error;
+  }
+};
+
+export const resetPassword = async (email: string) => {
+  try {
+    const { data } = await axiosInstance.post("/auth/reset", { email });
     return data;
   } catch (error: any) {
     throw error.data || error;

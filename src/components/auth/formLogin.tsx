@@ -3,7 +3,6 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import axios from "axios";
 import { useRouter } from "next/navigation";
 
 import { Button, Input } from "@/components/ui";
@@ -19,6 +18,8 @@ import {
 import { FormError } from "./formError";
 import { FormSuccess } from "./formSuccess";
 import { LoginSchema } from "./loginSchema";
+import Link from "next/link";
+import { loginUser } from "../../../services/auth";
 
 interface IProps {
   switchForm: () => void;
@@ -43,9 +44,9 @@ export const FormLogin: React.FC<IProps> = ({ switchForm }) => {
     setSuccess("");
 
     try {
-      const response = await axios.post("/api/auth/login", {
-        email: values.email,
-        password: values.password,
+      const response = await loginUser({
+        email: values?.email,
+        password: values?.password,
       });
 
       if (response.status === 200) {
@@ -56,7 +57,8 @@ export const FormLogin: React.FC<IProps> = ({ switchForm }) => {
         setSuccess(response.data.success);
       }
     } catch (error: any) {
-      setError(error.response?.data?.error || "Login failed.");
+      const errorMessage = error.response?.data?.error || "Login failed.";
+      setError(errorMessage);
     }
   };
 
@@ -122,6 +124,9 @@ export const FormLogin: React.FC<IProps> = ({ switchForm }) => {
                           {...field}
                         />
                       </FormControl>
+                      <Button className="font-normal" variant="link" size="sm">
+                        <Link href="/auth/reset">Forgot password?</Link>
+                      </Button>
                       <FormMessage />
                     </FormItem>
                   );

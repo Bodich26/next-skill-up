@@ -1,4 +1,3 @@
-import { Container } from "@/components/shared";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
