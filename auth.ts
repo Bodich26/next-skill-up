@@ -54,6 +54,21 @@ export const {
         return false;
       }
 
+      if (existingUser.isTwoFactorEnabled) {
+        const twoFactorConfirmation =
+          await prisma.twoFactorConfirmation.findUnique({
+            where: { userId: existingUser.id },
+          });
+
+        if (!twoFactorConfirmation) {
+          return false;
+        }
+
+        await prisma.twoFactorConfirmation.delete({
+          where: { id: twoFactorConfirmation.id },
+        });
+      }
+
       return true;
     },
 

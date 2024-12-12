@@ -4,13 +4,10 @@ import { AuthError } from "next-auth";
 import bcrypt from "bcryptjs";
 import { LoginSchema } from "@/components/auth";
 import { signIn } from "../../../../../auth";
-import { sendVerificationEmail } from "@/lib/mail";
+import { sendVerificationEmail, sendTwoFactorTokenEmail } from "@/lib/mail";
 import { DEFAULT_LOGIN_REDIRECT } from "../../../../../route";
-import { generateVerification } from "@/lib/tokens";
-
-export async function POST(req: NextRequest) {
-  return postLoginUser(req);
-}
+import { generateVerification, generateTwoFactorToken } from "@/lib/tokens";
+import { z } from "zod";
 
 export const getVerificationTokenByToken = async (token: string) => {
   try {
@@ -23,28 +20,15 @@ export const getVerificationTokenByToken = async (token: string) => {
   }
 };
 
-export const getVerificationTokenByEmail = async (email: string) => {
+export const postLoginUser = async (values: z.infer<typeof LoginSchema>) => {
   try {
-    const verificationToken = await prisma.verificationToken.findFirst({
-      where: { email },
-    });
-    return verificationToken;
-  } catch {
-    return null;
-  }
-};
+    const validatedFields = LoginSchema.safeParse(values);
 
-export async function postLoginUser(req: NextRequest) {
-  try {
-    const data = await req.json();
-    const { email, password } = await LoginSchema.parse(data);
-
-    if (!email || !password) {
-      return NextResponse.json(
-        { error: "Not all necessary data has been transferred!" },
-        { status: 400 }
-      );
+    if (!validatedFields.success) {
+      return NextResponse.json({ error: "Invalid fields!" }, { status: 400 });
     }
+
+    const { email, password, code } = validatedFields.data;
 
     const existingUser = await prisma.user.findUnique({
       where: { email },
@@ -79,23 +63,62 @@ export async function postLoginUser(req: NextRequest) {
       );
     }
 
-    const result = await signIn("credentials", {
+    if (existingUser.isTwoFactorEnabled && existingUser.email) {
+      if (code) {
+        const twoFactorToken = await prisma.twoFactorToken.findFirst({
+          where: { email: existingUser.email },
+        });
+
+        if (!twoFactorToken) {
+          return NextResponse.json({ error: "Invalid code!" }, { status: 405 });
+        }
+
+        if (twoFactorToken.token !== code) {
+          return NextResponse.json({ error: "Invalid code!" }, { status: 406 });
+        }
+
+        const hasExpired = new Date(twoFactorToken.expires) < new Date();
+
+        if (hasExpired) {
+          return NextResponse.json({ error: "Code expired!" }, { status: 407 });
+        }
+
+        await prisma.twoFactorToken.delete({
+          where: { id: twoFactorToken.id },
+        });
+
+        const existingConfirmation =
+          await prisma.twoFactorConfirmation.findUnique({
+            where: { userId: existingUser.id },
+          });
+
+        if (existingConfirmation) {
+          await prisma.twoFactorConfirmation.delete({
+            where: { id: existingConfirmation.id },
+          });
+        }
+
+        await prisma.twoFactorConfirmation.create({
+          data: {
+            userId: existingUser.id,
+          },
+        });
+      } else {
+        const twoFactorToken = await generateTwoFactorToken(existingUser.email);
+        await sendTwoFactorTokenEmail(
+          twoFactorToken.email,
+          twoFactorToken.token
+        );
+
+        return NextResponse.json({ twoFactor: true }, { status: 200 });
+      }
+    }
+
+    await signIn("credentials", {
       email,
       password,
       redirectTo: DEFAULT_LOGIN_REDIRECT,
     });
-
-    if (!result) {
-      return NextResponse.json(
-        { message: "Invalid credentials" },
-        { status: 401 }
-      );
-    }
-
-    return NextResponse.json(
-      { message: "Login successful", result },
-      { status: 200 }
-    );
   } catch (error) {
     if (error instanceof AuthError) {
       switch (error.type) {
@@ -117,4 +140,4 @@ export async function postLoginUser(req: NextRequest) {
       { status: 500 }
     );
   }
-}
+};

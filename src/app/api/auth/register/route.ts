@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "../../../../../prisma/prisma-client";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import { RegisterSchema } from "@/components/auth";
 import { sendVerificationEmail } from "@/lib/mail";
 import { generateVerification } from "@/lib/tokens";

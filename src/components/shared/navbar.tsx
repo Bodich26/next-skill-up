@@ -19,7 +19,7 @@ export const Navbar: React.FC<Props> = ({ className }) => {
       <h1 className="font-bold text-4xl tracking-wide">Front-End Dev</h1>
       <div
         className="bg-input py-1 px-3 rounded-lg cursor-pointer hover:bg-primary transition-bg duration-300 ease-in-out"
-        onClick={() => signOut()}
+        onClick={() => signOut({ callbackUrl: "/" })}
       >
         <LogOut size={24} />
       </div>

@@ -1,11 +1,26 @@
-"use server";
-
-import { NextResponse } from "next/server";
-import { getVerificationTokenByToken } from "../login/route";
+import { NextResponse, NextRequest } from "next/server";
 import { prisma } from "../../../../../prisma/prisma-client";
 
+export async function POST(req: NextRequest) {
+  try {
+    const { token } = await req.json();
+    if (!token) {
+      return NextResponse.json({ error: "Token is required" }, { status: 400 });
+    }
+
+    return await newVerification(token);
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
+}
+
 export const newVerification = async (token: string) => {
-  const existingToken = await getVerificationTokenByToken(token);
+  const existingToken = await prisma.verificationToken.findUnique({
+    where: { token: token },
+  });
   if (!existingToken) {
     return NextResponse.json(
       { error: "Token does not exist!" },

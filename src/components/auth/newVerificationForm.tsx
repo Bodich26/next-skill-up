@@ -30,11 +30,10 @@ export const NewVerificationForm = () => {
 
     try {
       const response = await newVerification(token);
-      const data = await response.json();
-      if (response.ok) {
-        setSuccess(data.success);
+      if (response.success) {
+        setSuccess(response.success);
       } else {
-        setError(data.error);
+        setError(response.error || "Something went wrong!");
       }
     } catch (e) {
       setError("Something went wrong!");

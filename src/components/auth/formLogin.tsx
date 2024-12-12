@@ -3,7 +3,6 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useRouter } from "next/navigation";
 
 import { Button, Input } from "@/components/ui";
 import { Container } from "@/components/shared";
@@ -17,19 +16,19 @@ import {
 } from "@/components/ui/form";
 import { FormError } from "./formError";
 import { FormSuccess } from "./formSuccess";
-import { LoginSchema } from "./loginSchema";
+import { LoginSchema } from "./schemas";
 import Link from "next/link";
-import { loginUser } from "../../../services/auth";
+import { postLoginUser } from "@/app/api/auth/login/route";
 
 interface IProps {
   switchForm: () => void;
 }
 
 export const FormLogin: React.FC<IProps> = ({ switchForm }) => {
+  const [showTwoFactor, setShowTwoFactor] = React.useState<boolean>(false);
   const [error, setError] = React.useState<string | undefined>("");
   const [success, setSuccess] = React.useState<string | undefined>("");
-
-  const router = useRouter();
+  const [isPending, startTransition] = React.useTransition();
 
   const login = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
@@ -43,23 +42,29 @@ export const FormLogin: React.FC<IProps> = ({ switchForm }) => {
     setError("");
     setSuccess("");
 
-    try {
-      const response = await loginUser({
-        email: values?.email,
-        password: values?.password,
-      });
+    startTransition(async () => {
+      try {
+        const response = await postLoginUser(values);
+        const data = await response.json();
 
-      if (response.status === 200) {
-        setSuccess("Login successful!");
-        router.push("/dashboard");
-      } else {
-        setError(response.data.error || "Login failed.");
-        setSuccess(response.data.success);
+        if (data?.error) {
+          login.reset();
+          setError(data.error);
+        }
+
+        if (data.success) {
+          login.reset();
+          setSuccess(data.success);
+        }
+
+        if (data?.twoFactor) {
+          setShowTwoFactor(true);
+        }
+      } catch (err) {
+        console.error("Unexpected error during login:", err);
+        setError("Something went wrong");
       }
-    } catch (error: any) {
-      const errorMessage = error.response?.data?.error || "Login failed.";
-      setError(errorMessage);
-    }
+    });
   };
 
   return (
@@ -85,61 +90,92 @@ export const FormLogin: React.FC<IProps> = ({ switchForm }) => {
                   Create an Account
                 </p>
               </div>
-              <FormField
-                name="email"
-                control={login.control}
-                render={({ field }) => {
-                  return (
-                    <FormItem>
-                      <FormLabel className="text-lg font-semibold">
-                        Email
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          className="w-80 h-10"
-                          placeholder="m@example.com"
-                          type="email"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
-              />
-              <FormField
-                name="password"
-                control={login.control}
-                render={({ field }) => {
-                  return (
-                    <FormItem>
-                      <FormLabel className="text-lg font-semibold">
-                        Password
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          className="w-80 h-10"
-                          placeholder="******"
-                          type="password"
-                          {...field}
-                        />
-                      </FormControl>
-                      <Button className="font-normal" variant="link" size="sm">
-                        <Link href="/auth/reset">Forgot password?</Link>
-                      </Button>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
-              />
+              {showTwoFactor && (
+                <FormField
+                  name="code"
+                  control={login.control}
+                  render={({ field }) => {
+                    return (
+                      <FormItem>
+                        <FormLabel className="text-lg font-semibold">
+                          Two Factor Code
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            className="w-80 h-10"
+                            placeholder="123456"
+                            {...field}
+                            disabled={isPending}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
+                />
+              )}
+              {!showTwoFactor && (
+                <>
+                  <FormField
+                    name="email"
+                    control={login.control}
+                    render={({ field }) => {
+                      return (
+                        <FormItem>
+                          <FormLabel className="text-lg font-semibold">
+                            Email
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              className="w-80 h-10"
+                              placeholder="m@example.com"
+                              type="email"
+                              {...field}
+                              disabled={isPending}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      );
+                    }}
+                  />
+                  <FormField
+                    name="password"
+                    control={login.control}
+                    render={({ field }) => {
+                      return (
+                        <FormItem>
+                          <FormLabel className="text-lg font-semibold">
+                            Password
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              className="w-80 h-10"
+                              placeholder="***"
+                              type="password"
+                              {...field}
+                              disabled={isPending}
+                            />
+                          </FormControl>
+                          <Button
+                            className="font-normal"
+                            variant="link"
+                            size="sm"
+                            disabled={isPending}
+                          >
+                            <Link href="/auth/reset">Forgot password?</Link>
+                          </Button>
+                          <FormMessage />
+                        </FormItem>
+                      );
+                    }}
+                  />
+                </>
+              )}
               <FormError message={error} />
               <FormSuccess message={success} />
-              <Button
-                className=" mt-[10px]"
-                type="submit"
-                onClick={() => console.log("fff")}
-              >
-                Login
+              <Button className=" mt-[10px]" type="submit">
+                {showTwoFactor ? "Confirm" : "Login"}
               </Button>
             </form>
           </Form>

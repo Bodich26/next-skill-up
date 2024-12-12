@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/select";
 import { FormError } from "./formError";
 import { FormSuccess } from "./formSuccess";
-import { RegisterSchema } from "./registerSchema";
+import { RegisterSchema } from "./schemas";
 
 interface IProps {
   switchForm: () => void;
@@ -190,7 +190,7 @@ export const FormRegister: React.FC<IProps> = ({ switchForm }) => {
                         <Input
                           disabled={isPending}
                           className="w-80 h-10"
-                          placeholder="******"
+                          placeholder="***"
                           type="password"
                           {...field}
                         />
@@ -213,7 +213,7 @@ export const FormRegister: React.FC<IProps> = ({ switchForm }) => {
                         <Input
                           disabled={isPending}
                           className="w-80 h-10"
-                          placeholder="******"
+                          placeholder="***"
                           type="password"
                           {...field}
                         />
