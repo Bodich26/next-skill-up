@@ -6,20 +6,16 @@ import { sendVerificationEmail } from "@/lib/mail";
 import { generateVerification } from "@/lib/tokens";
 
 export async function POST(req: NextRequest) {
-  return postRegisterUser(req);
-}
-
-export async function postRegisterUser(req: NextRequest) {
   try {
     const data = await req.json();
+
     const { name, email, password, passwordConfirm, role } =
       await RegisterSchema.parse(data);
 
     if (!role || !name || !email || !password) {
-      return NextResponse.json(
-        { error: "Not all necessary data has been transferred!" },
-        { status: 400 }
-      );
+      return NextResponse.json({
+        error: "Not all necessary data has been transferred!",
+      });
     }
 
     const existingUser = await prisma.user.findUnique({
@@ -27,10 +23,7 @@ export async function postRegisterUser(req: NextRequest) {
     });
 
     if (existingUser) {
-      return NextResponse.json(
-        { error: "Email is already in use!" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Email is already in use!" });
     }
 
     const existingName = await prisma.user.findUnique({
@@ -38,10 +31,7 @@ export async function postRegisterUser(req: NextRequest) {
     });
 
     if (existingName) {
-      return NextResponse.json(
-        { error: "Name is already in use!" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Name is already in use!" });
     }
 
     const hashedPasswordUser = await bcrypt.hash(password, 10);
@@ -70,9 +60,6 @@ export async function postRegisterUser(req: NextRequest) {
       { status: 201 }
     );
   } catch (error) {
-    return NextResponse.json(
-      { error: "Internal Server Error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Internal Server Error" });
   }
 }

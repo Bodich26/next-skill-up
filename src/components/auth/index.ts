@@ -9,3 +9,4 @@ export { NewVerificationForm } from "./newVerificationForm";
 export { ResetForm } from "./resetForm";
 export { ResetSchema } from "./schemas";
 export { NewPasswordForm } from "./newPasswordForm";
+export { LogoutButton } from "./logoutButton";

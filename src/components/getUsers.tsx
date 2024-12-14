@@ -1,15 +1,17 @@
 "use client";
 import React, { useEffect } from "react";
-import { auth } from "../../auth";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { fetchUser } from "@/redux/slices/userSlice";
 import { useAppDispatch } from "@/redux/hooks/useAppDispatch";
 import { DisplayUser, SkeletonUser, SkeletonAward, UserAwards } from "./shared";
 
-export const GetUsers = async () => {
-  // const session = await auth();
-  // const dispatch = useAppDispatch();
+interface IUser {
+  userId: string | undefined;
+}
+
+export const GetUsers = ({ userId }: IUser) => {
+  const dispatch = useAppDispatch();
 
   const {
     data: user,
@@ -17,9 +19,9 @@ export const GetUsers = async () => {
     error,
   } = useSelector((state: RootState) => state.user);
 
-  // useEffect(() => {
-  //   dispatch(fetchUser(session!.user!.id!));
-  // }, [dispatch, session]);
+  useEffect(() => {
+    dispatch(fetchUser(userId!));
+  }, [dispatch, userId]);
 
   return (
     <>

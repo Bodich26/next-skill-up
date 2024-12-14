@@ -1,9 +1,6 @@
-"use client";
-
 import { Navbar, Sidebar } from "@/components/shared";
-
+import { store } from "@/redux/store";
 import { Provider } from "react-redux";
-import { store } from "../../redux/store";
 
 export default function AuthLayout({
   children,

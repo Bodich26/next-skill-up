@@ -5,7 +5,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useRouter } from "next/navigation";
-import { registerUser } from "../../../services/auth";
 
 import { Button, Input, Select } from "@/components/ui";
 import { Container } from "@/components/shared";
@@ -26,6 +25,7 @@ import {
 import { FormError } from "./formError";
 import { FormSuccess } from "./formSuccess";
 import { RegisterSchema } from "./schemas";
+import { registerUser } from "../../../services/auth";
 
 interface IProps {
   switchForm: () => void;
@@ -55,20 +55,11 @@ export const FormRegister: React.FC<IProps> = ({ switchForm }) => {
 
     startTransition(async () => {
       try {
-        const response = await registerUser({
-          role: values.role,
-          name: values.name,
-          email: values.email,
-          password: values.password,
-          passwordConfirm: values.passwordConfirm,
-        });
-
-        if (response.message) {
+        const response = await registerUser(values);
+        if (response.success) {
           setSuccess(response.message);
+          createAccount.reset();
           router.push("/dashboard");
-        } else {
-          setError(response.error || "Register failed.");
-          setSuccess("");
         }
       } catch (error: any) {
         setError("An unexpected error occurred.");
@@ -225,12 +216,7 @@ export const FormRegister: React.FC<IProps> = ({ switchForm }) => {
               />
               <FormError message={error} />
               <FormSuccess message={success} />
-              <Button
-                disabled={isPending}
-                className=" mt-[10px]"
-                type="submit"
-                onClick={() => console.log("fff")}
-              >
+              <Button disabled={isPending} className=" mt-[10px]" type="submit">
                 Create
               </Button>
             </form>
