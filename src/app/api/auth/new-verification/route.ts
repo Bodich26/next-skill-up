@@ -5,15 +5,12 @@ export async function POST(req: NextRequest) {
   try {
     const { token } = await req.json();
     if (!token) {
-      return NextResponse.json({ error: "Token is required" }, { status: 400 });
+      return NextResponse.json({ error: "Token is required" });
     }
 
     return await newVerification(token);
   } catch (error) {
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Internal server error" });
   }
 }
 
@@ -22,25 +19,19 @@ export const newVerification = async (token: string) => {
     where: { token: token },
   });
   if (!existingToken) {
-    return NextResponse.json(
-      { error: "Token does not exist!" },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: "Token does not exist!" });
   }
 
   const hasExpired = new Date(existingToken.expires) < new Date();
   if (hasExpired) {
-    return NextResponse.json({ error: "Token has expired!" }, { status: 401 });
+    return NextResponse.json({ error: "Token has expired!" });
   }
 
   const existingUser = await prisma.user.findUnique({
     where: { email: existingToken.email },
   });
   if (!existingUser) {
-    return NextResponse.json(
-      { error: "Email does not exist!" },
-      { status: 402 }
-    );
+    return NextResponse.json({ error: "Email does not exist!" });
   }
 
   await prisma.user.update({
@@ -51,9 +42,16 @@ export const newVerification = async (token: string) => {
     },
   });
 
+  await prisma.user.update({
+    where: { id: existingUser.id },
+    data: {
+      isTwoFactorEnabled: true,
+    },
+  });
+
   await prisma.verificationToken.delete({
     where: { id: existingToken.id },
   });
 
-  return NextResponse.json({ success: "Email verified" }, { status: 200 });
+  return NextResponse.json({ success: "Email verified" });
 };

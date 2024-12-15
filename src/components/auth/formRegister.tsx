@@ -56,13 +56,16 @@ export const FormRegister: React.FC<IProps> = ({ switchForm }) => {
     startTransition(async () => {
       try {
         const response = await registerUser(values);
-        if (response.success) {
-          setSuccess(response.message);
-          createAccount.reset();
-          router.push("/dashboard");
+        if (response.error) {
+          setError(response.error);
         }
-      } catch (error: any) {
-        setError("An unexpected error occurred.");
+        if (response.success) {
+          setSuccess("Successful registration, confirm email");
+          createAccount.reset();
+        }
+      } catch (err: any) {
+        console.error("Unexpected error during register:", err);
+        setError(err?.message || "Something went wrong");
       }
     });
   };

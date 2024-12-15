@@ -9,13 +9,10 @@ import { generatePasswordResetToken } from "@/lib/tokens";
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
+
     return await reset(body);
   } catch (error) {
-    console.error("Error in POST /api/auth/reset:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Internal server error" });
   }
 }
 
@@ -23,7 +20,7 @@ export const reset = async (value: z.infer<typeof ResetSchema>) => {
   const validatedFields = ResetSchema.safeParse(value);
 
   if (!validatedFields.success) {
-    return NextResponse.json({ error: "Invalid email!" }, { status: 400 });
+    return NextResponse.json({ error: "Invalid email!" });
   }
 
   const { email } = validatedFields.data;
@@ -33,7 +30,7 @@ export const reset = async (value: z.infer<typeof ResetSchema>) => {
   });
 
   if (!existingUser) {
-    return NextResponse.json({ error: "Email not found!" }, { status: 401 });
+    return NextResponse.json({ error: "Email not found!" });
   }
 
   const passwordResetToken = await generatePasswordResetToken(email);
@@ -42,5 +39,7 @@ export const reset = async (value: z.infer<typeof ResetSchema>) => {
     passwordResetToken.token
   );
 
-  return NextResponse.json({ success: "Reset Email" }, { status: 200 });
+  return NextResponse.json({
+    success: "Password Reset Email sent successfully.",
+  });
 };

@@ -6,14 +6,14 @@ import { Button } from "../ui";
 import { BarLoader } from "react-spinners";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
-
-import { newVerification } from "@/app/api/auth/newVerification/route";
 import { FormSuccess } from "./formSuccess";
 import { FormError } from "./formError";
+import { verifyEmail } from "../../../services/auth";
 
 export const NewVerificationForm = () => {
   const [error, setError] = useState<string | undefined>();
   const [success, setSuccess] = useState<string | undefined>();
+
   const searchParams = useSearchParams();
   const router = useRouter();
   const token = searchParams.get("token");
@@ -29,13 +29,13 @@ export const NewVerificationForm = () => {
     }
 
     try {
-      const response = await newVerification(token);
+      const response = await verifyEmail(token);
       if (response.success) {
         setSuccess(response.success);
       } else {
         setError(response.error || "Something went wrong!");
       }
-    } catch (e) {
+    } catch (err: any) {
       setError("Something went wrong!");
     }
   }, [token, success, error]);

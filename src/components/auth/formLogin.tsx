@@ -18,7 +18,7 @@ import { FormError } from "./formError";
 import { FormSuccess } from "./formSuccess";
 import { LoginSchema } from "./schemas";
 import Link from "next/link";
-import { postLoginUser } from "@/app/api/auth/login/route";
+import { loginUser } from "../../../services/auth";
 
 interface IProps {
   switchForm: () => void;
@@ -44,25 +44,25 @@ export const FormLogin: React.FC<IProps> = ({ switchForm }) => {
 
     startTransition(async () => {
       try {
-        const response = await postLoginUser(values);
-        const data = await response.json();
+        const response = await loginUser({
+          email: values.email,
+          password: values.password,
+          code: showTwoFactor ? values.code : undefined,
+        });
 
-        if (data?.error) {
-          login.reset();
-          setError(data.error);
-        }
-
-        if (data.success) {
-          login.reset();
-          setSuccess(data.success);
-        }
-
-        if (data?.twoFactor) {
+        if (response.twoFactor) {
           setShowTwoFactor(true);
+        } else if (response.success) {
+          setSuccess(response.message);
+          login.reset();
+        } else if (response.error) {
+          setError(response.error);
+        } else {
+          setError("Unknown error occurred.");
         }
-      } catch (err) {
+      } catch (err: any) {
         console.error("Unexpected error during login:", err);
-        setError("Something went wrong");
+        setError(err?.message || "Something went wrong");
       }
     });
   };
@@ -174,7 +174,7 @@ export const FormLogin: React.FC<IProps> = ({ switchForm }) => {
               )}
               <FormError message={error} />
               <FormSuccess message={success} />
-              <Button className=" mt-[10px]" type="submit">
+              <Button disabled={isPending} className=" mt-[10px]" type="submit">
                 {showTwoFactor ? "Confirm" : "Login"}
               </Button>
             </form>

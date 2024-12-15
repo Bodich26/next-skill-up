@@ -7,7 +7,6 @@ import { signIn } from "../../../../../auth";
 import { sendVerificationEmail, sendTwoFactorTokenEmail } from "@/lib/mail";
 import { DEFAULT_LOGIN_REDIRECT } from "../../../../../route";
 import { generateVerification, generateTwoFactorToken } from "@/lib/tokens";
-import { z } from "zod";
 
 export const getVerificationTokenByToken = async (token: string) => {
   try {
@@ -20,12 +19,13 @@ export const getVerificationTokenByToken = async (token: string) => {
   }
 };
 
-export const postLoginUser = async (values: z.infer<typeof LoginSchema>) => {
+export async function POST(req: NextRequest) {
   try {
-    const validatedFields = LoginSchema.safeParse(values);
+    const body = await req.json();
+    const validatedFields = LoginSchema.safeParse(body);
 
     if (!validatedFields.success) {
-      return NextResponse.json({ error: "Invalid fields!" }, { status: 400 });
+      return NextResponse.json({ error: "Invalid fields!" });
     }
 
     const { email, password, code } = validatedFields.data;
@@ -35,10 +35,7 @@ export const postLoginUser = async (values: z.infer<typeof LoginSchema>) => {
     });
 
     if (!existingUser) {
-      return NextResponse.json(
-        { error: "Email not registered" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Email not registered!" });
     }
 
     const isPasswordValid = await bcrypt.compare(
@@ -46,7 +43,7 @@ export const postLoginUser = async (values: z.infer<typeof LoginSchema>) => {
       existingUser!.password
     );
     if (!isPasswordValid) {
-      return NextResponse.json({ error: "Wrong password." }, { status: 401 });
+      return NextResponse.json({ error: "Wrong password." });
     }
 
     if (!existingUser.emailVerified) {
@@ -57,10 +54,10 @@ export const postLoginUser = async (values: z.infer<typeof LoginSchema>) => {
         verificationToken.token
       );
 
-      return NextResponse.json(
-        { success: "Confirmation email sent!", verificationToken },
-        { status: 200 }
-      );
+      return NextResponse.json({
+        success: "Confirmation email sent!",
+        verificationToken,
+      });
     }
 
     if (existingUser.isTwoFactorEnabled && existingUser.email) {
@@ -70,17 +67,17 @@ export const postLoginUser = async (values: z.infer<typeof LoginSchema>) => {
         });
 
         if (!twoFactorToken) {
-          return NextResponse.json({ error: "Invalid code!" }, { status: 405 });
+          return NextResponse.json({ error: "Invalid code!" });
         }
 
         if (twoFactorToken.token !== code) {
-          return NextResponse.json({ error: "Invalid code!" }, { status: 406 });
+          return NextResponse.json({ error: "Invalid code!" });
         }
 
         const hasExpired = new Date(twoFactorToken.expires) < new Date();
 
         if (hasExpired) {
-          return NextResponse.json({ error: "Code expired!" }, { status: 407 });
+          return NextResponse.json({ error: "Code expired!" });
         }
 
         await prisma.twoFactorToken.delete({
@@ -110,34 +107,30 @@ export const postLoginUser = async (values: z.infer<typeof LoginSchema>) => {
           twoFactorToken.token
         );
 
-        return NextResponse.json({ twoFactor: true }, { status: 200 });
+        return NextResponse.json({
+          success: true,
+          twoFactor: true,
+          message:
+            "Two-factor authentication required. Check your email for the code.",
+        });
       }
     }
 
-    await signIn("credentials", {
-      email,
-      password,
+    return NextResponse.json({
+      success: true,
+      message: "Login successful!",
       redirectTo: DEFAULT_LOGIN_REDIRECT,
     });
   } catch (error) {
     if (error instanceof AuthError) {
       switch (error.type) {
         case "CredentialsSignin":
-          return NextResponse.json(
-            { error: "Invalid credentials" },
-            { status: 401 }
-          );
+          return NextResponse.json({ error: "Invalid credentials" });
         default:
-          return NextResponse.json(
-            { error: "Something went wrong" },
-            { status: 500 }
-          );
+          return NextResponse.json({ error: "Something went wrong" });
       }
     }
     console.error("Unexpected error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Internal server error" });
   }
-};
+}

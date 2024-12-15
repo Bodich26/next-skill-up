@@ -20,7 +20,7 @@ import { FormError } from "./formError";
 import { FormSuccess } from "./formSuccess";
 import { ResetSchema } from "./schemas";
 import { reset } from "@/app/api/auth/reset/route";
-import { resetPassword } from "../../../services/auth";
+import { resetPassword, sendPasswordResetEmail } from "../../../services/auth";
 
 interface IProps {}
 
@@ -44,10 +44,14 @@ export const ResetForm: React.FC<IProps> = () => {
 
     startTransition(async () => {
       try {
-        const response = await resetPassword(values.email);
-        setSuccess(response.success);
-      } catch (error: any) {
-        setError(error.error || "Something went wrong!");
+        const response = await sendPasswordResetEmail(values.email);
+        if (response.success) {
+          setSuccess(response.success);
+        } else {
+          setError(response.error || "Something went wrong!");
+        }
+      } catch (e) {
+        setError("Something went wrong!");
       }
     });
   };
@@ -96,12 +100,7 @@ export const ResetForm: React.FC<IProps> = () => {
               />
               <FormError message={error} />
               <FormSuccess message={success} />
-              <Button
-                disabled={isPending}
-                className=" mt-[10px]"
-                type="submit"
-                onClick={() => console.log("fff")}
-              >
+              <Button disabled={isPending} className=" mt-[10px]" type="submit">
                 Send reset email
               </Button>
             </form>

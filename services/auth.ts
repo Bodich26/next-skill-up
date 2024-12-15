@@ -35,14 +35,17 @@ export const registerUser = async ({
 export const loginUser = async ({
   email,
   password,
+  code,
 }: {
   email: string;
   password: string;
+  code?: string;
 }) => {
   try {
     const { data } = await axiosInstance.post(`/auth/login`, {
       email,
       password,
+      code,
     });
     return data;
   } catch (error: any) {
@@ -50,9 +53,34 @@ export const loginUser = async ({
   }
 };
 
-export const resetPassword = async (email: string) => {
+export const resetPassword = async (values: string, token: string) => {
   try {
-    const { data } = await axiosInstance.post("/auth/reset", { email });
+    const { data } = await axiosInstance.post("/auth/new-password", {
+      values,
+      token,
+    });
+    return data;
+  } catch (error: any) {
+    throw error.data || error;
+  }
+};
+
+export const sendPasswordResetEmail = async (email: string) => {
+  try {
+    const { data } = await axiosInstance.post("/auth/reset", {
+      email,
+    });
+    return data;
+  } catch (error: any) {
+    throw error.data || error;
+  }
+};
+
+export const verifyEmail = async (token: string) => {
+  try {
+    const { data } = await axiosInstance.post("/auth/new-verification", {
+      token,
+    });
     return data;
   } catch (error: any) {
     throw error.data || error;

@@ -6,13 +6,10 @@ import { prisma } from "../../../../../prisma/prisma-client";
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-    return await newPassword(body);
+    const data = await req.json();
+    return await newPassword(data);
   } catch (error) {
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Internal server error" });
   }
 }
 
@@ -21,12 +18,12 @@ export const newPassword = async (
   token?: string | null
 ) => {
   if (!token) {
-    return NextResponse.json({ error: "Missing token!" }, { status: 400 });
+    return NextResponse.json({ error: "Missing token!" });
   }
 
   const validatedFields = NewPasswordSchema.safeParse(values);
   if (!validatedFields.success) {
-    return NextResponse.json({ error: "Invalid fields!" }, { status: 401 });
+    return NextResponse.json({ error: "Invalid fields!" });
   }
 
   const { password } = validatedFields.data;
@@ -36,12 +33,12 @@ export const newPassword = async (
   });
 
   if (!existingToken) {
-    return NextResponse.json({ error: "Invalid token!" }, { status: 402 });
+    return NextResponse.json({ error: "Invalid token!" });
   }
 
   const hasExpired = new Date(existingToken.expires) < new Date();
   if (hasExpired) {
-    return NextResponse.json({ error: "Token has expired!" }, { status: 403 });
+    return NextResponse.json({ error: "Token has expired!" });
   }
 
   const existingUser = await prisma.user.findUnique({
@@ -49,10 +46,7 @@ export const newPassword = async (
   });
 
   if (!existingUser) {
-    return NextResponse.json(
-      { error: "Email does not exist!" },
-      { status: 405 }
-    );
+    return NextResponse.json({ error: "Email does not exist!" });
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -65,5 +59,5 @@ export const newPassword = async (
     where: { id: existingToken.id },
   });
 
-  return NextResponse.json({ success: "Password updated!" }, { status: 200 });
+  return NextResponse.json({ success: "Password updated!" });
 };

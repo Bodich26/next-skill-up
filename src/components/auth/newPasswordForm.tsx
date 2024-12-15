@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { useForm } from "react-hook-form";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import Link from "next/link";
@@ -18,7 +18,7 @@ import {
 import { FormError } from "./formError";
 import { FormSuccess } from "./formSuccess";
 import { NewPasswordSchema } from "./schemas";
-import { newPassword } from "@/app/api/auth/newPassword/route";
+import { resetPassword } from "../../../services/auth";
 
 interface IProps {}
 
@@ -28,6 +28,7 @@ export const NewPasswordForm: React.FC<IProps> = () => {
   const [isPending, startTransition] = React.useTransition();
 
   const searchParams = useSearchParams();
+  const router = useRouter();
   const token = searchParams.get("token");
 
   const resetForm = useForm<z.infer<typeof NewPasswordSchema>>({
@@ -41,14 +42,18 @@ export const NewPasswordForm: React.FC<IProps> = () => {
     setError("");
     setSuccess("");
 
+    if (!token) {
+      setError("Token is missing");
+      return;
+    }
+
     startTransition(async () => {
       try {
-        const response = await newPassword(values, token);
-        const data = await response.json();
-        if (data.success) {
-          setSuccess(data.success);
+        const response = await resetPassword(values.password, token);
+        if (response.success) {
+          setSuccess(response.success);
         } else {
-          setError(data.error || "Something went wrong!");
+          setError(response.error || "Something went wrong!");
         }
       } catch (e) {
         setError("Something went wrong!");
