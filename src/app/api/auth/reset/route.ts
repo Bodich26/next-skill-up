@@ -40,6 +40,6 @@ export const reset = async (value: z.infer<typeof ResetSchema>) => {
   );
 
   return NextResponse.json({
-    success: "Password Reset Email sent successfully.",
+    success: "Password reset email sent successfully.",
   });
 };

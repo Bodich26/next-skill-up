@@ -50,6 +50,7 @@ export const NewPasswordForm: React.FC<IProps> = () => {
     startTransition(async () => {
       try {
         const response = await resetPassword(values.password, token);
+
         if (response.success) {
           setSuccess(response.success);
         } else {

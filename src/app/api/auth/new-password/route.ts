@@ -7,7 +7,7 @@ import { prisma } from "../../../../../prisma/prisma-client";
 export async function POST(req: NextRequest) {
   try {
     const data = await req.json();
-    return await newPassword(data);
+    return await newPassword(data.values, data.token);
   } catch (error) {
     return NextResponse.json({ error: "Internal server error" });
   }
@@ -31,6 +31,8 @@ export const newPassword = async (
   const existingToken = await prisma.passwordResetToken.findUnique({
     where: { token: token },
   });
+  console.log("Token in database query:", token);
+  console.log("Existing token from database:", existingToken);
 
   if (!existingToken) {
     return NextResponse.json({ error: "Invalid token!" });

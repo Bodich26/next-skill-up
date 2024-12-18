@@ -53,10 +53,10 @@ export const loginUser = async ({
   }
 };
 
-export const resetPassword = async (values: string, token: string) => {
+export const resetPassword = async (password: string, token: string) => {
   try {
     const { data } = await axiosInstance.post("/auth/new-password", {
-      values,
+      values: { password },
       token,
     });
     return data;
