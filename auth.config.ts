@@ -18,16 +18,14 @@ export default {
             where: { email: email },
           });
 
-          if (!user) {
-            throw new Error("User not found.");
+          if (!user || !user.password) {
+            return null;
           }
 
-          const isPasswordValid = bcrypt.compare(password, user.password);
-          if (!isPasswordValid) {
-            throw new Error("Invalid password.");
+          const passwordsMatch = await bcrypt.compare(password, user.password);
+          if (passwordsMatch) {
+            return user;
           }
-
-          return user;
         }
 
         return null;

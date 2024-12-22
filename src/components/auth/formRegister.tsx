@@ -4,7 +4,6 @@ import React from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { useRouter } from "next/navigation";
 
 import { Button, Input, Select } from "@/components/ui";
 import { Container } from "@/components/shared";
@@ -36,7 +35,6 @@ export const FormRegister: React.FC<IProps> = ({ switchForm }) => {
   const [success, setSuccess] = React.useState<string | undefined>("");
   const [isPending, startTransition] = React.useTransition();
 
-  const router = useRouter();
   const createAccount = useForm<z.infer<typeof RegisterSchema>>({
     resolver: zodResolver(RegisterSchema),
     defaultValues: {

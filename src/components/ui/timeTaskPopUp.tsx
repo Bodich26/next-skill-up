@@ -16,7 +16,7 @@ import { Button } from "./button";
 import { Input } from "./input";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { useSession } from "next-auth/react";
+import { useCurrentUser } from "@/hooks";
 
 interface Props {
   className?: string;
@@ -40,7 +40,7 @@ export const TimeTaskPopUp: React.FC<Props> = ({
   const [isOpen, setIsOpen] = React.useState<boolean>(false);
   const [isBlock, setIsBlock] = React.useState<boolean>(true);
 
-  const session = useSession();
+  const userCurrent = useCurrentUser();
 
   const dispatch = useAppDispatch();
   const timeError = formState.errors.time?.message;
@@ -85,7 +85,7 @@ export const TimeTaskPopUp: React.FC<Props> = ({
       const resultTimeAction = await dispatch(
         setTimeValueCompleteTask({
           time: data.time,
-          userId: session.data!.user!.id!,
+          userId: userCurrent!.id!,
         })
       );
 

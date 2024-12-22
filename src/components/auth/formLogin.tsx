@@ -19,6 +19,8 @@ import { FormSuccess } from "./formSuccess";
 import { LoginSchema } from "./schemas";
 import Link from "next/link";
 import { loginUser } from "../../../services/auth";
+import { useRouter } from "next/navigation";
+import { DEFAULT_LOGIN_REDIRECT } from "../../../routes";
 
 interface IProps {
   switchForm: () => void;
@@ -29,6 +31,8 @@ export const FormLogin: React.FC<IProps> = ({ switchForm }) => {
   const [error, setError] = React.useState<string | undefined>("");
   const [success, setSuccess] = React.useState<string | undefined>("");
   const [isPending, startTransition] = React.useTransition();
+
+  const router = useRouter();
 
   const login = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
@@ -58,7 +62,8 @@ export const FormLogin: React.FC<IProps> = ({ switchForm }) => {
         } else if (response.error) {
           setError(response.error);
         } else {
-          setError("Unknown error occurred.");
+          setSuccess("Login successful!");
+          router.push(DEFAULT_LOGIN_REDIRECT);
         }
       } catch (err: any) {
         console.error("Unexpected error during login:", err);
@@ -161,6 +166,7 @@ export const FormLogin: React.FC<IProps> = ({ switchForm }) => {
                             className="font-normal"
                             variant="link"
                             size="sm"
+                            type="submit"
                             disabled={isPending}
                           >
                             <Link href="/auth/reset">Forgot password?</Link>

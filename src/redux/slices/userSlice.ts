@@ -3,7 +3,7 @@ import { Api } from "../../../services/api-client";
 import { User } from "@prisma/client";
 
 interface IInitial {
-  data: User | null;
+  user: User | null;
   statusUser: "idle" | "loading" | "succeeded" | "failed";
   error: string | null;
 }
@@ -23,7 +23,7 @@ export const fetchUser = createAsyncThunk(
 );
 
 const initialState: IInitial = {
-  data: null,
+  user: null,
   statusUser: "idle",
   error: null,
 };
@@ -39,7 +39,7 @@ const userSlice = createSlice({
       })
       .addCase(fetchUser.fulfilled, (state, action: PayloadAction<User>) => {
         state.statusUser = "succeeded";
-        state.data = action.payload;
+        state.user = action.payload;
       })
       .addCase(fetchUser.rejected, (state, action) => {
         state.statusUser = "failed";

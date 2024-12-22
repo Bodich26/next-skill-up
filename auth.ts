@@ -1,6 +1,5 @@
 import NextAuth, { DefaultSession } from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import { JWT } from "@auth/core/jwt";
 
 import authConfig from "./auth.config";
 import { prisma } from "./prisma/prisma-client";
@@ -19,6 +18,7 @@ declare module "next-auth" {
 declare module "@auth/core/jwt" {
   interface JWT {
     role?: Role;
+    id?: string;
   }
 }
 
@@ -30,39 +30,27 @@ export const {
 } = NextAuth({
   pages: {
     signIn: "/auth/login",
+    signOut: "/",
     error: "/auth/error",
-  },
-  events: {
-    async linkAccount({ user }) {
-      await prisma.user.update({
-        where: { id: user.id },
-        data: { emailVerified: new Date() },
-      });
-    },
   },
   callbacks: {
     async signIn({ user, account }) {
-      if (account?.provider !== "credentials") {
-        return true;
-      }
+      if (account?.provider !== "credentials") return true;
 
       const existingUser = await prisma.user.findUnique({
         where: { id: user.id },
       });
 
-      if (!existingUser?.emailVerified) {
-        return false;
-      }
+      if (!existingUser?.emailVerified) return false;
 
+      // Проверка на двухфакторную аутентификацию
       if (existingUser.isTwoFactorEnabled) {
         const twoFactorConfirmation =
           await prisma.twoFactorConfirmation.findUnique({
             where: { userId: existingUser.id },
           });
 
-        if (!twoFactorConfirmation) {
-          return false;
-        }
+        if (!twoFactorConfirmation) return false;
 
         await prisma.twoFactorConfirmation.delete({
           where: { id: twoFactorConfirmation.id },
@@ -72,34 +60,27 @@ export const {
       return true;
     },
 
-    async session({ token, session }) {
-      if (token.sub && session.user) {
-        session.user.id = token.sub;
-      }
-
-      if (token.role && session.user) {
-        session.user.role = token.role;
+    async session({ session, token }) {
+      if (token) {
+        session.user.id = token.id as string; // Приведение типа
+        session.user.role = token.role as Role; // Убедитесь, что у вас есть роль
       }
       return session;
     },
-    async jwt({ token }) {
-      if (!token.sub) {
-        return token;
+
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id; // Сохраняем id пользователя в токене
       }
 
-      const existingUser = await prisma.user.findUnique({
-        where: { id: token.sub },
-      });
-
-      if (!existingUser) {
-        return token;
-      }
-
-      token.role = existingUser.role;
       return token;
     },
   },
   adapter: PrismaAdapter(prisma),
-  session: { strategy: "jwt" },
+  session: {
+    strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60,
+    updateAge: 24 * 60 * 60,
+  },
   ...authConfig,
 });

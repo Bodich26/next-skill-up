@@ -86,3 +86,12 @@ export const verifyEmail = async (token: string) => {
     throw error.data || error;
   }
 };
+
+export const logoutUser = async () => {
+  try {
+    const user = await axiosInstance.post(`/auth/signout`);
+    return user;
+  } catch (error: any) {
+    throw error.response?.data || error;
+  }
+};

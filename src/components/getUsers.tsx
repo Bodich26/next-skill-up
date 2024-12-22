@@ -1,27 +1,28 @@
 "use client";
-import React, { useEffect } from "react";
+import React from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { fetchUser } from "@/redux/slices/userSlice";
 import { useAppDispatch } from "@/redux/hooks/useAppDispatch";
 import { DisplayUser, SkeletonUser, SkeletonAward, UserAwards } from "./shared";
+import { useCurrentUser } from "@/hooks";
 
-interface IUser {
-  userId: string | undefined;
-}
-
-export const GetUsers = ({ userId }: IUser) => {
+export const GetUsers = () => {
+  const userCurrent = useCurrentUser();
   const dispatch = useAppDispatch();
+  const { user, statusUser, error } = useSelector(
+    (state: RootState) => state.user
+  );
 
-  const {
-    data: user,
-    statusUser,
-    error,
-  } = useSelector((state: RootState) => state.user);
+  console.log(userCurrent);
 
-  useEffect(() => {
-    dispatch(fetchUser(userId!));
-  }, [dispatch, userId]);
+  React.useEffect(() => {
+    if (userCurrent) {
+      dispatch(fetchUser(userCurrent.id!));
+    } else {
+      console.log("Пользователь не получен или не авторизован!");
+    }
+  }, [dispatch, userCurrent]);
 
   return (
     <>

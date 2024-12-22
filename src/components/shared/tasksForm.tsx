@@ -8,7 +8,7 @@ import {
   addNewTaskToUser,
 } from "../../redux/slices/tasksSlice";
 
-import { useResetFilter } from "@/hooks";
+import { useCurrentUser, useResetFilter } from "@/hooks";
 import { Button, Input, Select } from "../ui";
 import {
   SelectContent,
@@ -27,6 +27,7 @@ interface Props {
 
 export const TasksForm: React.FC<Props> = ({ className }) => {
   const dispatch = useAppDispatch();
+  const userCurrent = useCurrentUser();
 
   const { taskName, taskDifficulty } = useSelector(
     (state: any) => state.tasks.form
@@ -50,10 +51,9 @@ export const TasksForm: React.FC<Props> = ({ className }) => {
 
     if (taskName && taskDifficulty) {
       const loadingCreateTask = toast.loading("Loading...");
-      const userId = "1";
 
       const newTask = {
-        userId,
+        userId: userCurrent!.id!,
         name: taskName,
         difficulty: taskDifficulty,
         completed: false,
