@@ -15,7 +15,7 @@ export const Navbar: React.FC<Props> = ({ className }) => {
         className
       )}
     >
-      <h1 className="font-bold text-4xl tracking-wide">Front-End Dev</h1>
+      <h1 className="font-bold text-4xl tracking-wide">Front-End</h1>
       <LogoutButton />
     </div>
   );

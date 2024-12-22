@@ -43,7 +43,6 @@ export const {
 
       if (!existingUser?.emailVerified) return false;
 
-      // Проверка на двухфакторную аутентификацию
       if (existingUser.isTwoFactorEnabled) {
         const twoFactorConfirmation =
           await prisma.twoFactorConfirmation.findUnique({
@@ -62,15 +61,18 @@ export const {
 
     async session({ session, token }) {
       if (token) {
-        session.user.id = token.id as string; // Приведение типа
-        session.user.role = token.role as Role; // Убедитесь, что у вас есть роль
+        session.user.id = token.id as string;
+        session.user.role = token.role as Role;
       }
+
+      console.log(session);
+
       return session;
     },
 
     async jwt({ token, user }) {
       if (user) {
-        token.id = user.id; // Сохраняем id пользователя в токене
+        token.id = user.id;
       }
 
       return token;

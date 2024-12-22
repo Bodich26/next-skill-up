@@ -14,8 +14,6 @@ export const GetUsers = () => {
     (state: RootState) => state.user
   );
 
-  console.log(userCurrent);
-
   React.useEffect(() => {
     if (userCurrent) {
       dispatch(fetchUser(userCurrent.id!));

@@ -1,11 +1,11 @@
-import { Reward } from "@prisma/client";
+import { Reward, Role } from "@prisma/client";
 
 export type User = {
   id: string;
   name: string;
   email: string;
   password: string;
-  role: string;
+  role: Role;
   rating: number;
   studyTimes: number;
   taskCompleted: number;
