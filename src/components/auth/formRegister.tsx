@@ -58,12 +58,12 @@ export const FormRegister: React.FC<IProps> = ({ switchForm }) => {
           setError(response.error);
         }
         if (response.success) {
-          setSuccess("Successful registration, confirm email");
+          setSuccess("Успешная регистрация, подтвердите почту!");
           createAccount.reset();
         }
       } catch (err: any) {
-        console.error("Unexpected error during register:", err);
-        setError(err?.message || "Something went wrong");
+        console.error("Ошибка во время регистрации:", err);
+        setError(err?.message || "Что-то пошло не так 😢");
       }
     });
   };
@@ -78,9 +78,9 @@ export const FormRegister: React.FC<IProps> = ({ switchForm }) => {
               onSubmit={createAccount.handleSubmit(handleSubmitCreateAccount)}
             >
               <div className="max-w-80 flex flex-col gap-3">
-                <h1 className=" text-3xl font-bold">Create an account</h1>
+                <h1 className=" text-3xl font-bold">Создание аккаунта</h1>
                 <p className=" opacity-50">
-                  Complete all fields below to create an account
+                  Заполните все поля ниже, чтобы создать аккаунт
                 </p>
               </div>
               <div>
@@ -88,7 +88,7 @@ export const FormRegister: React.FC<IProps> = ({ switchForm }) => {
                   className="opacity-50 cursor-pointer text-center hover:opacity-100 transition-opacity duration-300 ease-in-out"
                   onClick={switchForm}
                 >
-                  Login to Account
+                  Войти в аккаунт
                 </p>
               </div>
               <FormField
@@ -98,7 +98,7 @@ export const FormRegister: React.FC<IProps> = ({ switchForm }) => {
                   return (
                     <FormItem>
                       <FormLabel className="text-lg font-semibold">
-                        Role
+                        Роль
                       </FormLabel>
                       <Select
                         onValueChange={field.onChange}
@@ -106,7 +106,7 @@ export const FormRegister: React.FC<IProps> = ({ switchForm }) => {
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="your role" />
+                            <SelectValue placeholder="выберите роль" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -130,13 +130,13 @@ export const FormRegister: React.FC<IProps> = ({ switchForm }) => {
                   return (
                     <FormItem>
                       <FormLabel className="text-lg font-semibold">
-                        Name
+                        Никнейм
                       </FormLabel>
                       <FormControl>
                         <Input
                           disabled={isPending}
                           className="w-80 h-10"
-                          placeholder="your name"
+                          placeholder="ваш никнейм"
                           type="text"
                           {...field}
                         />
@@ -153,7 +153,7 @@ export const FormRegister: React.FC<IProps> = ({ switchForm }) => {
                   return (
                     <FormItem>
                       <FormLabel className="text-lg font-semibold">
-                        Email
+                        Почта
                       </FormLabel>
                       <FormControl>
                         <Input
@@ -176,7 +176,7 @@ export const FormRegister: React.FC<IProps> = ({ switchForm }) => {
                   return (
                     <FormItem>
                       <FormLabel className="text-lg font-semibold">
-                        Password
+                        Пароль
                       </FormLabel>
                       <FormControl>
                         <Input
@@ -199,7 +199,7 @@ export const FormRegister: React.FC<IProps> = ({ switchForm }) => {
                   return (
                     <FormItem>
                       <FormLabel className="text-lg font-semibold">
-                        Password Confirm
+                        Повторите пароль
                       </FormLabel>
                       <FormControl>
                         <Input
@@ -218,7 +218,7 @@ export const FormRegister: React.FC<IProps> = ({ switchForm }) => {
               <FormError message={error} />
               <FormSuccess message={success} />
               <Button disabled={isPending} className=" mt-[10px]" type="submit">
-                Create
+                Создать
               </Button>
             </form>
           </Form>

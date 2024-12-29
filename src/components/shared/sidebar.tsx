@@ -2,7 +2,7 @@
 
 import React from "react";
 import { cn } from "@/lib/utils";
-import { Gauge, MessageSquareText, List } from "lucide-react";
+import { Gauge, List, NotepadText } from "lucide-react";
 import Image from "next/image";
 import Logo from "../../../public/images/logo.svg";
 import Link from "next/link";
@@ -17,17 +17,17 @@ const menuItem = [
     title: "Pages",
     list: [
       {
-        title: "Dashboard",
+        title: "Главная",
         path: "/dashboard",
         icon: <Gauge size={24} />,
       },
       {
-        title: "Messages",
-        path: "/dashboard/messages",
-        icon: <MessageSquareText size={24} />,
+        title: "Тесты",
+        path: "/dashboard/tests",
+        icon: <NotepadText size={24} />,
       },
       {
-        title: "Tasks",
+        title: "Задачи",
         path: "/dashboard/tasks",
         icon: <List size={24} />,
       },

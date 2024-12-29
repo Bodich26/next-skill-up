@@ -5,12 +5,12 @@ export async function POST(req: NextRequest) {
   try {
     const { token } = await req.json();
     if (!token) {
-      return NextResponse.json({ error: "Token is required" });
+      return NextResponse.json({ error: "Требуется токен!" });
     }
 
     return await newVerification(token);
   } catch (error) {
-    return NextResponse.json({ error: "Internal server error" });
+    return NextResponse.json({ error: "Внутренняя ошибка сервера 🤖" });
   }
 }
 
@@ -19,19 +19,19 @@ export const newVerification = async (token: string) => {
     where: { token: token },
   });
   if (!existingToken) {
-    return NextResponse.json({ error: "Token does not exist!" });
+    return NextResponse.json({ error: "Токен не существует!" });
   }
 
   const hasExpired = new Date(existingToken.expires) < new Date();
   if (hasExpired) {
-    return NextResponse.json({ error: "Token has expired!" });
+    return NextResponse.json({ error: "Срок действия токена истек!" });
   }
 
   const existingUser = await prisma.user.findUnique({
     where: { email: existingToken.email },
   });
   if (!existingUser) {
-    return NextResponse.json({ error: "Email does not exist!" });
+    return NextResponse.json({ error: "Почта не существует!" });
   }
 
   await prisma.user.update({
@@ -53,5 +53,5 @@ export const newVerification = async (token: string) => {
     where: { id: existingToken.id },
   });
 
-  return NextResponse.json({ success: "Email verified" });
+  return NextResponse.json({ success: "Почта подтверждена!" });
 };

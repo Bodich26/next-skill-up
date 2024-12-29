@@ -71,13 +71,13 @@ const getRandomPoints = (range: [number, number]): number => {
 
 const calculatePoints = (difficulty: string): number => {
   const pointsMapping: Record<string, [number, number]> = {
-    "Easy layout": [420, 515],
-    "Medium layout": [616, 760],
-    "Hard layout": [780, 922],
-    "Easy App": [1140, 1460],
-    "Medium App": [1550, 1890],
-    "Hard App": [2100, 2830],
-    "Learning info": [430, 620],
+    Easy_layout: [420, 515],
+    Medium_layout: [616, 760],
+    Hard_layout: [780, 922],
+    Easy_App: [1140, 1460],
+    Medium_App: [1550, 1890],
+    Hard_App: [2100, 2830],
+    Learning_Info: [430, 620],
   };
 
   const range = pointsMapping[difficulty];

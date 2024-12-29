@@ -53,20 +53,20 @@ export const FilteredTasks = ({
             onClick={handleFilterOpen}
           />
         </PopoverTrigger>
-        <PopoverContent className=" p-[9px] text-center flex flex-col gap-2 max-w-[250px]">
+        <PopoverContent className=" p-[9px] text-start flex flex-col gap-2 max-w-[250px]">
           <p
             className="text-base cursor-pointer hover:opacity-75 duration-150"
             onClick={handleFilterEasy}
           >
-            Sort by: Show
-            <span className="text-primary"> Easy</span> Tasks First
+            Сначала
+            <span className="text-primary"> легкие задачи</span>
           </p>
           <p
             className="text-base cursor-pointer hover:opacity-75 duration-150"
             onClick={handleFilterHard}
           >
-            Sort by: Show
-            <span className="text-primary"> Hard</span> Tasks First
+            Сначала
+            <span className="text-primary"> тяжёлые задачи</span>
           </p>
         </PopoverContent>
       </Popover>

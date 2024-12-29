@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
 
     if (!role || !name || !email || !password) {
       return NextResponse.json({
-        error: "Not all necessary data has been transferred!",
+        error: "Не все необходимые данные переданы!",
       });
     }
 
@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
     });
 
     if (existingUser) {
-      return NextResponse.json({ error: "Email is already in use!" });
+      return NextResponse.json({ error: "Такая почта уже используется!" });
     }
 
     const existingName = await prisma.user.findUnique({
@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
     });
 
     if (existingName) {
-      return NextResponse.json({ error: "Name is already in use!" });
+      return NextResponse.json({ error: "Такой Ник уже занят!" });
     }
 
     const hashedPasswordUser = await bcrypt.hash(password, 10);
@@ -60,6 +60,6 @@ export async function POST(req: NextRequest) {
       { status: 201 }
     );
   } catch (error) {
-    return NextResponse.json({ error: "Internal Server Error" });
+    return NextResponse.json({ error: "Внутренняя ошибка сервера 🤖" });
   }
 }

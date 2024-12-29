@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
   const validatedFields = LoginSchema.safeParse(body);
 
   if (!validatedFields.success) {
-    return NextResponse.json({ error: "Invalid fields!" });
+    return NextResponse.json({ error: "Неверные поля!" });
   }
 
   const { email, password, code } = validatedFields.data;
@@ -35,12 +35,14 @@ export async function POST(req: NextRequest) {
   });
 
   if (!existingUser) {
-    return NextResponse.json({ error: "Email not registered!" });
+    return NextResponse.json({
+      error: "Почта не зарегистрирована!",
+    });
   }
 
   const isPasswordValid = await bcrypt.compare(password, existingUser.password);
   if (!isPasswordValid) {
-    return NextResponse.json({ error: "Wrong password." });
+    return NextResponse.json({ error: "Неверный пароль!" });
   }
 
   if (!existingUser.emailVerified) {
@@ -52,7 +54,7 @@ export async function POST(req: NextRequest) {
     );
 
     return NextResponse.json({
-      success: "Confirmation email sent!",
+      success: "Письмо с подтверждением отправлено!",
       verificationToken,
     });
   }
@@ -64,17 +66,17 @@ export async function POST(req: NextRequest) {
       });
 
       if (!twoFactorToken) {
-        return NextResponse.json({ error: "Invalid code!" });
+        return NextResponse.json({ error: "Неверный код!" });
       }
 
       if (twoFactorToken.token !== code) {
-        return NextResponse.json({ error: "Invalid code!" });
+        return NextResponse.json({ error: "Неверный код!" });
       }
 
       const hasExpired = new Date(twoFactorToken.expires) < new Date();
 
       if (hasExpired) {
-        return NextResponse.json({ error: "Code expired!" });
+        return NextResponse.json({ error: "Срок действия кода истек!" });
       }
 
       await prisma.twoFactorToken.delete({
@@ -104,8 +106,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({
         success: true,
         twoFactor: true,
-        message:
-          "Two-factor authentication required. Check your email for the code.",
+        message: "Проверьте почту и введите код двухфакторной аутентификации.",
       });
     }
   }
@@ -117,14 +118,14 @@ export async function POST(req: NextRequest) {
       redirectTo: DEFAULT_LOGIN_REDIRECT,
     });
 
-    return NextResponse.json({ success: true, message: "Login successful!" });
+    return NextResponse.json({ success: true, message: "Успешный вход!" });
   } catch (error) {
     if (error instanceof AuthError) {
       switch (error.type) {
         case "CredentialsSignin":
-          return NextResponse.json({ error: "Invalid credentials" });
+          return NextResponse.json({ error: "Неверные учетные данные!" });
         default:
-          return NextResponse.json({ error: "Something went wrong" });
+          return NextResponse.json({ error: "Неизвестная ошибка 😢" });
       }
     }
     throw error;

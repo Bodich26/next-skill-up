@@ -2,7 +2,6 @@ import { Difficulty } from "@/type";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Api } from "../../../services/api-client";
 import { Task } from "@prisma/client";
-import { date } from "zod";
 
 interface TaskFormState {
   taskName: string;
@@ -27,13 +26,13 @@ interface IDifficulty {
 }
 
 const difficultyOrder: IDifficulty = {
-  "easy layout": 1,
-  "easy app": 1,
-  "learning info": 1,
-  "medium layout": 2,
-  "medium app": 2,
-  "hard layout": 3,
-  "hard app": 3,
+  Easy_layout: 1,
+  Easy_App: 1,
+  Learning_Info: 1,
+  Medium_layout: 2,
+  Medium_App: 2,
+  Hard_layout: 3,
+  Hard_App: 3,
 };
 
 export const fetchTasksList = createAsyncThunk(
@@ -128,10 +127,8 @@ export const setTimeValueCompleteTask = createAsyncThunk(
 
 const sortTasks = (tasks: Task[], sortOrder: "easyToHard" | "hardToEasy") => {
   return tasks.sort((a, b) => {
-    const difficultyA =
-      difficultyOrder[a.difficulty.toLowerCase()] || difficultyOrder.medium;
-    const difficultyB =
-      difficultyOrder[b.difficulty.toLowerCase()] || difficultyOrder.medium;
+    const difficultyA = difficultyOrder[a.difficulty] || 2;
+    const difficultyB = difficultyOrder[b.difficulty] || 2;
 
     return sortOrder === "easyToHard"
       ? difficultyA - difficultyB

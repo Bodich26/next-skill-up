@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
 
     return await reset(body);
   } catch (error) {
-    return NextResponse.json({ error: "Internal server error" });
+    return NextResponse.json({ error: "Внутренняя ошибка сервера 🤖" });
   }
 }
 
@@ -20,7 +20,7 @@ export const reset = async (value: z.infer<typeof ResetSchema>) => {
   const validatedFields = ResetSchema.safeParse(value);
 
   if (!validatedFields.success) {
-    return NextResponse.json({ error: "Invalid email!" });
+    return NextResponse.json({ error: "Неверная почта!" });
   }
 
   const { email } = validatedFields.data;
@@ -30,7 +30,7 @@ export const reset = async (value: z.infer<typeof ResetSchema>) => {
   });
 
   if (!existingUser) {
-    return NextResponse.json({ error: "Email not found!" });
+    return NextResponse.json({ error: "Почта не найдена!" });
   }
 
   const passwordResetToken = await generatePasswordResetToken(email);
@@ -40,6 +40,6 @@ export const reset = async (value: z.infer<typeof ResetSchema>) => {
   );
 
   return NextResponse.json({
-    success: "Password reset email sent successfully.",
+    success: "Письмо для сброса пароля успешно отправлено!",
   });
 };

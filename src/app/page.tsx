@@ -11,7 +11,7 @@ export default function Home() {
             <div className="text-center mt-[270px]">
               <h1 className="font-bold text-6xl tracking-wide">SKILL UPPING</h1>
               <p className="font-light text-2xl my-3">
-                Upgrade your skill and become better
+                Прокачивай свои навыки и становись лучше
               </p>
               <SignInButton />
             </div>

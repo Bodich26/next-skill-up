@@ -50,7 +50,7 @@ export const TasksForm: React.FC<Props> = ({ className }) => {
     e.preventDefault();
 
     if (taskName && taskDifficulty) {
-      const loadingCreateTask = toast.loading("Loading...");
+      const loadingCreateTask = toast.loading("Загрузка...");
 
       const newTask = {
         userId: userCurrent!.id!,
@@ -61,10 +61,10 @@ export const TasksForm: React.FC<Props> = ({ className }) => {
 
       try {
         await dispatch(addNewTaskToUser(newTask));
-        toast.success("Task is to successfully create!");
+        toast.success("Задача успешно добавлена 😀");
         handleResetFilters();
       } catch (error) {
-        toast.error("Failed to create task.");
+        toast.error("Ошибка при добавлении задачи 😞");
       } finally {
         toast.dismiss(loadingCreateTask);
       }
@@ -73,7 +73,7 @@ export const TasksForm: React.FC<Props> = ({ className }) => {
 
   return (
     <div className="basis-[25%] border-[1px] border-solid border-input bg-card rounded-lg p-4">
-      <h3 className="font-bold text-3xl text-center mb-6">Create a Tasks</h3>
+      <h3 className="font-bold text-3xl text-center mb-6">Создать задачу</h3>
 
       <form
         onSubmit={handleSubmit}
@@ -82,24 +82,24 @@ export const TasksForm: React.FC<Props> = ({ className }) => {
         <Input
           value={taskName}
           onChange={(e) => handleNameTask(e)}
-          placeholder="Enter the task name"
+          placeholder="Введите название задачи"
           className="max-w-[100%]"
         />
         <Select value={taskDifficulty} onValueChange={handleDifficultyChange}>
           <SelectTrigger className="max-w-[100%]">
-            <SelectValue placeholder="select task type" />
+            <SelectValue placeholder="Выберите тип" />
           </SelectTrigger>
           <SelectContent>
-            <span className="ml-2 text-primary">layouts</span>
-            <SelectItem value="Easy layout">Easy layout</SelectItem>
-            <SelectItem value="Medium layout">Medium layout</SelectItem>
-            <SelectItem value="Hard layout">Hard layout</SelectItem>
-            <span className="ml-2 text-primary">Apps</span>
-            <SelectItem value="Easy App">Easy App</SelectItem>
-            <SelectItem value="Medium App">Medium App</SelectItem>
-            <SelectItem value="Hard App">Hard App</SelectItem>
-            <span className="ml-2 text-primary">Learning</span>
-            <SelectItem value="Learning info">Learning info</SelectItem>
+            <span className="ml-2 text-primary">Вёрстка</span>
+            <SelectItem value="Easy_layout">Легкая вёрстка</SelectItem>
+            <SelectItem value="Medium_layout">Средняя вёрстка</SelectItem>
+            <SelectItem value="Hard_layout">Тяжёлая вёрстка</SelectItem>
+            <span className="ml-2 text-primary">Приложение</span>
+            <SelectItem value="Easy_App">Легкое Приложение</SelectItem>
+            <SelectItem value="Medium_App">Среднее Приложение</SelectItem>
+            <SelectItem value="Hard_App">Тяжёлое Приложение</SelectItem>
+            <span className="ml-2 text-primary">Изучение</span>
+            <SelectItem value="Learning_Info">Изучение теории</SelectItem>
           </SelectContent>
         </Select>
         {(taskName || taskDifficulty) && (
@@ -109,7 +109,7 @@ export const TasksForm: React.FC<Props> = ({ className }) => {
             className="text-lg h-9 inline"
             onClick={handleResetFilters}
           >
-            Reset
+            Сбросить
           </Button>
         )}
         <Button
@@ -118,7 +118,7 @@ export const TasksForm: React.FC<Props> = ({ className }) => {
           size="lg"
           className="text-lg h-9"
         >
-          Add Task
+          Добавить
         </Button>
       </form>
     </div>

@@ -32,17 +32,17 @@ export const TaskItem: React.FC<Props> = ({
       <div className="flex flex-col gap-3">
         <dl className="flex items-center gap-2">
           <Bookmark className="text-primary" />
-          <dt>Task name:</dt>
+          <dt>Название задачи:</dt>
           <dd className="font-bold text-base">{taskName}</dd>
         </dl>
         <dl className="flex items-center gap-2">
           <CircleDollarSign className="text-primary" />
-          <dt>Total points:</dt>
+          <dt>Кол-во очков:</dt>
           <dd className="font-bold text-base">{taskPoints}</dd>
         </dl>
         <dl className="flex items-center gap-2">
           <Settings className="text-primary" />
-          <dt>Task type:</dt>
+          <dt>Тип задачи:</dt>
           <dd className="font-bold text-base">{taskDifficulty}</dd>
         </dl>
       </div>
@@ -57,7 +57,7 @@ export const TaskItem: React.FC<Props> = ({
                 classBtnComplete
               )}
             >
-              Complete
+              Выполнить
             </Button>
           }
           classNameTrigger={cn(classBtnComplete)}
@@ -69,7 +69,7 @@ export const TaskItem: React.FC<Props> = ({
           size="lg"
           className="text-lg h-9 w-[145px]"
         >
-          Delete
+          Удалить
         </Button>
       </div>
     </div>

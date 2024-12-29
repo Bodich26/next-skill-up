@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
     const data = await req.json();
     return await newPassword(data.values, data.token);
   } catch (error) {
-    return NextResponse.json({ error: "Internal server error" });
+    return NextResponse.json({ error: "Внутренняя ошибка сервера 🤖" });
   }
 }
 
@@ -18,12 +18,12 @@ export const newPassword = async (
   token?: string | null
 ) => {
   if (!token) {
-    return NextResponse.json({ error: "Missing token!" });
+    return NextResponse.json({ error: "Отсутствует токен!" });
   }
 
   const validatedFields = NewPasswordSchema.safeParse(values);
   if (!validatedFields.success) {
-    return NextResponse.json({ error: "Invalid fields!" });
+    return NextResponse.json({ error: "Неверные поля!" });
   }
 
   const { password } = validatedFields.data;
@@ -31,16 +31,14 @@ export const newPassword = async (
   const existingToken = await prisma.passwordResetToken.findUnique({
     where: { token: token },
   });
-  console.log("Token in database query:", token);
-  console.log("Existing token from database:", existingToken);
 
   if (!existingToken) {
-    return NextResponse.json({ error: "Invalid token!" });
+    return NextResponse.json({ error: "Неверный токен!" });
   }
 
   const hasExpired = new Date(existingToken.expires) < new Date();
   if (hasExpired) {
-    return NextResponse.json({ error: "Token has expired!" });
+    return NextResponse.json({ error: "Срок действия токена истек!" });
   }
 
   const existingUser = await prisma.user.findUnique({
@@ -48,7 +46,7 @@ export const newPassword = async (
   });
 
   if (!existingUser) {
-    return NextResponse.json({ error: "Email does not exist!" });
+    return NextResponse.json({ error: "Почта не существует!" });
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -61,5 +59,5 @@ export const newPassword = async (
     where: { id: existingToken.id },
   });
 
-  return NextResponse.json({ success: "Password updated!" });
+  return NextResponse.json({ success: "Пароль обновлен!" });
 };

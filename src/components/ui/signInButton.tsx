@@ -3,6 +3,7 @@ import React from "react";
 import { Button } from "./button";
 import { User } from "lucide-react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 interface IProps {}
 
@@ -16,7 +17,7 @@ export const SignInButton = ({}: IProps) => {
       onClick={() => router.push("/auth/login")}
     >
       <User size={24} />
-      Login
+      Вход
     </Button>
   );
 };

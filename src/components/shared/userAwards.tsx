@@ -42,7 +42,7 @@ export default function UserAwards({ user }: IUsers) {
     : [];
 
   const handleAwardPopUp = async (userId: string, rewardId: number) => {
-    const loadingToastId = toast.loading("Loading...");
+    const loadingToastId = toast.loading("Загрузка..");
 
     try {
       const resultAction = await dispatch(
@@ -51,12 +51,12 @@ export default function UserAwards({ user }: IUsers) {
 
       if (addRewardToUser.fulfilled.match(resultAction)) {
         await dispatch(fetchUser(user.id));
-        toast.success("Reward added successfully!");
+        toast.success("Награда успешно добавлена 😀");
       } else if (addRewardToUser.rejected.match(resultAction)) {
-        toast.error("Error adding reward");
+        toast.error("Ошибка при добавлении награды 😞");
       }
     } catch (error) {
-      toast.error("An error occurred while removing the reward.");
+      toast.error("Произошла ошибка при удалении награды 😞");
     } finally {
       toast.dismiss(loadingToastId);
     }
@@ -64,7 +64,7 @@ export default function UserAwards({ user }: IUsers) {
 
   return (
     <div className="border-[1px] p-4 border-solid border-input bg-card rounded-lg">
-      <h3 className="font-bold text-3xl mb-3">List of awards</h3>
+      <h3 className="font-bold text-3xl mb-3">Список наград</h3>
       <div className="max-h-[434px] min-h-[434px]">
         <div className="flex flex-row flex-wrap justify-start gap-6 overflow-y-auto max-h-[434px]">
           {isLoading

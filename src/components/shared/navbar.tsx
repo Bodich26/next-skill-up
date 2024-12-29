@@ -2,12 +2,15 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 import { LogoutButton } from "../auth";
+import { useCurrentUser } from "@/hooks";
 
 interface Props {
   className?: string;
 }
 
 export const Navbar: React.FC<Props> = ({ className }) => {
+  const userCurrent = useCurrentUser();
+
   return (
     <div
       className={cn(
@@ -15,7 +18,9 @@ export const Navbar: React.FC<Props> = ({ className }) => {
         className
       )}
     >
-      <h1 className="font-bold text-4xl tracking-wide">Front-End</h1>
+      <h1 className="font-bold text-4xl tracking-wide">
+        {userCurrent?.role.replace(/_/g, " ")}
+      </h1>
       <LogoutButton />
     </div>
   );

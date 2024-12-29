@@ -13,3 +13,6 @@ export { SkeletonAward } from "./skeletonAward";
 export { RemoveAward } from "./removeAward";
 export { SkeletonTask } from "./skeletonTask";
 export { FilteredTasks } from "./filteredTasks";
+export { TechnologyItem } from "./technologyItem";
+export { QuizItem } from "./quizItem";
+export { QuizAnswer } from "./quizAnswer";

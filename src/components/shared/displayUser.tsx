@@ -21,15 +21,15 @@ export default function DisplayUser({ user }: IUsers) {
         <div className="flex flex-col gap-2 ">
           <h3 className="font-bold text-3xl">{user?.name}</h3>
           <dl className="flex gap-2">
-            <dt>Personal rating:</dt>
+            <dt>Очки рейтинга:</dt>
             <dd className="font-bold text-base">{user?.rating}</dd>
           </dl>
           <dl className="flex gap-2">
-            <dt>Study time:</dt>
+            <dt>Время изучения:</dt>
             <dd className="font-bold text-base">{user?.studyTimes}</dd>
           </dl>
           <dl className="flex gap-2">
-            <dt>Tasks completed:</dt>
+            <dt>Выполненных задач:</dt>
             <dd className="font-bold text-base">{user?.taskCompleted}</dd>
           </dl>
         </div>

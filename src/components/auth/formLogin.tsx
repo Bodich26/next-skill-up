@@ -62,12 +62,12 @@ export const FormLogin: React.FC<IProps> = ({ switchForm }) => {
         } else if (response.error) {
           setError(response.error);
         } else {
-          setSuccess("Login successful!");
+          setSuccess("Успешный Вход!");
           router.push(DEFAULT_LOGIN_REDIRECT);
         }
       } catch (err: any) {
-        console.error("Unexpected error during login:", err);
-        setError(err?.message || "Something went wrong");
+        console.error("Ошибка при входе в аккаунт!", err);
+        setError(err?.message || "Неизвестная ошибка!");
       }
     });
   };
@@ -82,17 +82,15 @@ export const FormLogin: React.FC<IProps> = ({ switchForm }) => {
               onSubmit={login.handleSubmit(handleSubmitLogin)}
             >
               <div className="max-w-80 flex flex-col gap-3">
-                <h1 className=" text-3xl font-bold">Login to account</h1>
-                <p className="opacity-50 ">
-                  Enter your email address and password
-                </p>
+                <h1 className=" text-3xl font-bold">Вход в аккаунт</h1>
+                <p className="opacity-50 ">Введите вашу почту и пароль</p>
               </div>
               <div>
                 <p
                   className="opacity-50 cursor-pointer text-center hover:opacity-100 transition-opacity duration-300 ease-in-out"
                   onClick={switchForm}
                 >
-                  Create an Account
+                  Создать аккаунт
                 </p>
               </div>
               {showTwoFactor && (
@@ -103,7 +101,7 @@ export const FormLogin: React.FC<IProps> = ({ switchForm }) => {
                     return (
                       <FormItem>
                         <FormLabel className="text-lg font-semibold">
-                          Two Factor Code
+                          Двухфакторный код
                         </FormLabel>
                         <FormControl>
                           <Input
@@ -128,7 +126,7 @@ export const FormLogin: React.FC<IProps> = ({ switchForm }) => {
                       return (
                         <FormItem>
                           <FormLabel className="text-lg font-semibold">
-                            Email
+                            Почта
                           </FormLabel>
                           <FormControl>
                             <Input
@@ -151,7 +149,7 @@ export const FormLogin: React.FC<IProps> = ({ switchForm }) => {
                       return (
                         <FormItem>
                           <FormLabel className="text-lg font-semibold">
-                            Password
+                            Пароль
                           </FormLabel>
                           <FormControl>
                             <Input
@@ -169,7 +167,7 @@ export const FormLogin: React.FC<IProps> = ({ switchForm }) => {
                             type="submit"
                             disabled={isPending}
                           >
-                            <Link href="/auth/reset">Forgot password?</Link>
+                            <Link href="/auth/reset">Забыли пароль?</Link>
                           </Button>
                           <FormMessage />
                         </FormItem>
@@ -181,7 +179,7 @@ export const FormLogin: React.FC<IProps> = ({ switchForm }) => {
               <FormError message={error} />
               <FormSuccess message={success} />
               <Button disabled={isPending} className=" mt-[10px]" type="submit">
-                {showTwoFactor ? "Confirm" : "Login"}
+                {showTwoFactor ? "Подтвердить" : "Вход"}
               </Button>
             </form>
           </Form>

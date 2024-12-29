@@ -64,7 +64,7 @@ export const AddAwardPopUp: React.FC<Props> = ({
               {descAward}
             </DialogDescription>
             <strong className="font-bold text-2xl text-right text-current">
-              + {point} Points to personal rating
+              + {point} Очков к рейтингу!
             </strong>
           </DialogHeader>
         </DialogContent>

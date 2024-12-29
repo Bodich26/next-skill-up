@@ -67,13 +67,13 @@ export const Leaderboard: React.FC<Props> = ({ className }) => {
 
   return (
     <>
-      <h3 className="font-bold text-3xl text-center">Skill Upping</h3>
-      <p className="text-center mt-3">Leaderboard</p>
+      <h3 className="font-bold text-3xl text-center">Skill Up</h3>
+      <p className="text-center mt-3">Таблица Лидеров</p>
       <div className="flex items-center justify-between gap-7 mt-7">
         <Input
           value={filterName}
           onChange={handleFilterName}
-          placeholder="Enter the Nick"
+          placeholder="Введите Ник"
           className="max-w-[190px]"
         />
         {(filterName || selectedUserRole) && (
@@ -81,12 +81,12 @@ export const Leaderboard: React.FC<Props> = ({ className }) => {
             className="text-sm opacity-50 cursor-pointer text-center hover:opacity-100 transition-opacity duration-300 ease-in-out"
             onClick={handleResetFilters}
           >
-            Reset
+            Сброс
           </span>
         )}
         <Select value={selectedUserRole} onValueChange={setSelectedUserRole}>
           <SelectTrigger className="max-w-[190px]">
-            <SelectValue placeholder="Select a role" />
+            <SelectValue placeholder="Выберите роль" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="Front-End">Front-End</SelectItem>

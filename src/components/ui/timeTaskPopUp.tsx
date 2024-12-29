@@ -79,7 +79,7 @@ export const TimeTaskPopUp: React.FC<Props> = ({
   const handleCompleteTask = async (data: IInput) => {
     console.log(data.time);
 
-    const loadingToastId = toast.loading("Loading...");
+    const loadingToastId = toast.loading("Загрузка...");
 
     try {
       const resultTimeAction = await dispatch(
@@ -91,12 +91,12 @@ export const TimeTaskPopUp: React.FC<Props> = ({
 
       if (setTimeValueCompleteTask.fulfilled.match(resultTimeAction)) {
         await dispatch(fetchTasksList());
-        toast.success("Time added successfully!");
+        toast.success("Время изучения успешно обновлено 😀");
       } else if (setTimeValueCompleteTask.rejected.match(resultTimeAction)) {
-        toast.error("Error adding time 😞");
+        toast.error("Ошибка при добавлении времени 😞");
       }
     } catch (error) {
-      toast.error("An error occurred while adding time 😞");
+      toast.error("Произошла ошибка при добавлении времени 😞");
     } finally {
       toast.dismiss(loadingToastId);
     }
@@ -112,11 +112,12 @@ export const TimeTaskPopUp: React.FC<Props> = ({
         <DialogContent className="flex justify-between">
           <DialogHeader className="gap-1">
             <DialogTitle className="font-bold text-3xl">
-              Much time ?
+              Сколько времени?
             </DialogTitle>
             <div className="h-[1px] bg-input rounded"></div>
             <DialogDescription className="font-normal text-base ">
-              Enter the number of hours it took to complete the task.
+              Введите количество времени, которое потребовалось для выполнения
+              задачи!
             </DialogDescription>
 
             {timeError && <p className="text-primary">{timeError}</p>}
@@ -130,7 +131,7 @@ export const TimeTaskPopUp: React.FC<Props> = ({
                 type="submit"
                 onClick={onClickConfirmPopUp}
               >
-                Confirm
+                Подтвердить
               </Button>
 
               <Input
@@ -141,7 +142,7 @@ export const TimeTaskPopUp: React.FC<Props> = ({
                 })}
                 className="w-[309px] mt-4"
                 type="text"
-                placeholder="Enter the number of hours"
+                placeholder="Введите количество часов"
                 value={timeValue}
                 onChange={handleInputChange}
               />

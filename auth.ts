@@ -73,6 +73,13 @@ export const {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
+
+        const existingUser = await prisma.user.findUnique({
+          where: { id: user.id },
+        });
+        if (existingUser) {
+          token.role = existingUser.role;
+        }
       }
 
       return token;
