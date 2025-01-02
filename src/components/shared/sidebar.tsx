@@ -45,19 +45,24 @@ export const Sidebar: React.FC<Props> = ({ className }) => {
       <ul>
         {menuItem.map((item, index) => (
           <li key={index} className="flex flex-col gap-y-5">
-            {item.list.map((link, index) => (
-              <Link
-                key={index}
-                href={link.path}
-                className={cn(
-                  "flex gap-4 p-2 border-[1px] border-solid border-input bg-input rounded-lg w-[195px] hover:bg-primary transition-bg duration-300 ease-in-out",
-                  pathName === link.path && "bg-primary"
-                )}
-              >
-                {link.icon}
-                {link.title}
-              </Link>
-            ))}
+            {item.list.map((link, index) => {
+              const isActive =
+                pathName === link.path ||
+                (link.path !== "/dashboard" && pathName.startsWith(link.path));
+              return (
+                <Link
+                  key={index}
+                  href={link.path}
+                  className={cn(
+                    "flex gap-4 p-2 border-[1px] border-solid border-input bg-input rounded-lg w-[195px] hover:bg-primary transition-bg duration-300 ease-in-out",
+                    isActive && "bg-primary"
+                  )}
+                >
+                  {link.icon}
+                  {link.title}
+                </Link>
+              );
+            })}
           </li>
         ))}
       </ul>

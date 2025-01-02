@@ -1,27 +1,23 @@
-import { cn } from "@/lib/utils";
+"use client";
+
+import React from "react";
 import { useAppDispatch } from "@/redux/hooks/useAppDispatch";
 import { removeRewardToUser } from "@/redux/slices/rewardSlice";
 import { fetchUser } from "@/redux/slices/userSlice";
 import { X } from "lucide-react";
-import React from "react";
 import { Toaster } from "../ui";
 import { toast } from "sonner";
 
 interface Props {
-  className?: string;
   rewardId: number;
   userId: string;
 }
 
-export const RemoveAward: React.FC<Props> = ({
-  className,
-  rewardId,
-  userId,
-}) => {
+export const RemoveAward: React.FC<Props> = ({ rewardId, userId }) => {
   const dispatch = useAppDispatch();
 
   const handleRemoveAwards = async (rewardId: number, userId: string) => {
-    const loadingToastId = toast.loading("Loading...");
+    const loadingToastId = toast.loading("Загрузка...");
 
     try {
       const resultAction = await dispatch(
@@ -30,12 +26,12 @@ export const RemoveAward: React.FC<Props> = ({
 
       if (removeRewardToUser.fulfilled.match(resultAction)) {
         await dispatch(fetchUser(userId));
-        toast.success("Reward remove successfully!");
+        toast.success("Награда успешно удалена 😀");
       } else if (removeRewardToUser.rejected.match(resultAction)) {
-        toast.error("Error removing reward.");
+        toast.error("Ошибка при удалении награды 😞");
       }
     } catch (error) {
-      toast.error("An error occurred while removing the reward.");
+      toast.error("Произошла ошибка при удалении награды 😞");
     } finally {
       toast.dismiss(loadingToastId);
     }
@@ -44,7 +40,8 @@ export const RemoveAward: React.FC<Props> = ({
   return (
     <>
       <X
-        className={cn("absolute cursor-pointer", className)}
+        className="
+          absolute opacity-0 group-hover:opacity-100 transition-opacity hover:text-primary ease-in cursor-pointer duration-300"
         width={18}
         height={18}
         onClick={() => handleRemoveAwards(rewardId, userId)}

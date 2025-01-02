@@ -52,7 +52,7 @@ export const AddAwardPopUp: React.FC<Props> = ({
               type="submit"
               onClick={handleReceiveClick}
             >
-              Receive
+              Получить
             </Button>
           </div>
           <DialogHeader className=" gap-1">

@@ -95,7 +95,6 @@ export default function UserAwards({ user }: IUsers) {
                               />
                             </div>
                             <RemoveAward
-                              className="opacity-0 group-hover:opacity-100 transition-opacity"
                               rewardId={reward.id}
                               userId={user.id}
                             />

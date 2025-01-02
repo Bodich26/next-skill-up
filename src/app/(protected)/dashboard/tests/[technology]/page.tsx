@@ -1,39 +1,17 @@
 "use client";
-
-import { QuizItem } from "@/components/shared";
-import { Button, Checkbox, Label, RadioGroup } from "@/components/ui";
-import { RadioGroupItem } from "@/components/ui/radio-group";
-import { usePathname, useSearchParams } from "next/navigation";
-import { number, optional } from "zod";
-
-interface Question {
-  id: number;
-  description: string;
-  role: "frontend" | "backend" | "design";
-  technology:
-    | "Html"
-    | "Css"
-    | "Js"
-    | "React"
-    | "Ts"
-    | "Next"
-    | "Web"
-    | "Security";
-  correctAnswer: string;
-  wrongAnswers: string[];
-}
-
-interface IProps {
-  questions: Question[];
-}
+import React from "react";
+import { QuizForm } from "@/components/shared/quizForm";
+import { usePathname } from "next/navigation";
+import { Role } from "@prisma/client";
+import { Technology } from "@/type";
 
 const dataQuestions = [
   {
-    id: 1,
+    id: "1",
     number: "1",
     description: "Что такое HTML?",
-    role: "FRONT_END",
-    technology: "HTML",
+    role: [Role.FRONT_END],
+    technology: "CSS",
     optional: [
       {
         answer: "Язык разметки, который задает структуру веб-страниц.",
@@ -54,10 +32,10 @@ const dataQuestions = [
     ],
   },
   {
-    id: 2,
+    id: "2",
     number: "2",
     description: "Какую роль играет doctype в HTML-документе?",
-    role: "FRONT_END",
+    role: [Role.FRONT_END],
     technology: "HTML",
     optional: [
       {
@@ -80,11 +58,11 @@ const dataQuestions = [
     ],
   },
   {
-    id: 3,
+    id: "3",
     number: "3",
     description: "Что такое атрибуты в HTML?",
-    role: "FRONT_END",
-    technology: "HTML",
+    role: [Role.FRONT_END],
+    technology: "JS",
     optional: [
       {
         answer:
@@ -108,10 +86,10 @@ const dataQuestions = [
     ],
   },
   {
-    id: 4,
+    id: "4",
     number: "4",
     description: "Какие глобальные атрибуты есть в HTML?",
-    role: "FRONT_END",
+    role: [Role.FRONT_END],
     technology: "HTML",
     optional: [
       {
@@ -134,19 +112,26 @@ const dataQuestions = [
   },
 ];
 
-export default function TechnologyTestPage({ questions }: IProps) {
-  const validTechnologies = [
-    "html",
-    "css",
-    "js",
-    "react",
-    "ts",
-    "next",
-    "web",
-    "security",
-  ];
+const validTechnologies = [
+  "html",
+  "css",
+  "js",
+  "react",
+  "ts",
+  "next",
+  "web",
+  "security",
+];
+
+export default function TechnologyTestPage() {
   const pathname = usePathname();
-  const technology = pathname.split("/").pop();
+  const technology = pathname.split("/").pop()?.toLowerCase();
+
+  const filterDataQuestions = React.useMemo(() => {
+    return dataQuestions.filter(
+      (type) => type.technology.toLowerCase() === technology
+    );
+  }, [technology]);
 
   if (
     typeof technology === "string" &&
@@ -154,26 +139,11 @@ export default function TechnologyTestPage({ questions }: IProps) {
   ) {
     return <h1>404 - Страница не найдена</h1>;
   }
+
   return (
-    <div className="border-[1px] border-solid border-input bg-card rounded-lg p-4 min-h-[806px] max-h-[806px]">
-      <div className=" flex items-center justify-between mb-7">
-        <h3 className="font-bold text-3xl">
-          Тесты по {""}
-          {technology
-            ? technology.charAt(0).toUpperCase() + technology.slice(1)
-            : ""}
-        </h3>
-        <Button variant="default" size="lg" className="text-lg h-9 ">
-          Завершить Тест
-        </Button>
-      </div>
-      <div className="h-[700px] overflow-y-auto">
-        <div className="flex flex-col gap-5">
-          <div className="flex flex-row overflow-y-auto gap-[64px] flex-wrap">
-            <QuizItem numberQuestion={1} question={"dddd"} />
-          </div>
-        </div>
-      </div>
-    </div>
+    <QuizForm
+      filterDataQuestions={filterDataQuestions}
+      technology={technology as Technology}
+    />
   );
 }
