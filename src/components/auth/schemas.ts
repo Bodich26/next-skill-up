@@ -10,10 +10,15 @@ export const LoginSchema = z.object({
   code: z.string().optional(),
 });
 
+export const VerifyEmailSchema = z.object({
+  token: z.string().min(1, "Token is required"),
+});
+
 export const NewPasswordSchema = z.object({
   password: z.string().min(3, {
     message: "Password must be at least 3 characters long.",
   }),
+  token: z.string().min(1, "Token is required"),
 });
 
 export const ResetSchema = z.object({

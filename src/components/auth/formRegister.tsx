@@ -54,12 +54,17 @@ export const FormRegister: React.FC<IProps> = ({ switchForm }) => {
     startTransition(async () => {
       try {
         const response = await registerUser(values);
-        if (response.error) {
-          setError(response.error);
-        }
-        if (response.success) {
-          setSuccess("Успешная регистрация, подтвердите почту!");
+
+        if ("success" in response) {
+          if (typeof response.success === "boolean") {
+            setSuccess("Успешная регистрация, подтвердите почту!");
+          } else {
+            setSuccess(response.success);
+          }
+
           createAccount.reset();
+        } else {
+          setError(response.error || "Что-то пошло не так!");
         }
       } catch (err: any) {
         console.error("Ошибка во время регистрации:", err);

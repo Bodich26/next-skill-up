@@ -55,10 +55,10 @@ export async function POST(req: NextRequest) {
       verificationToken.token
     );
 
-    return NextResponse.json(
-      { success: "User registered successfully", user: newUser },
-      { status: 201 }
-    );
+    return NextResponse.json({
+      success: "Успешно! Подтвердите почту 📧",
+      user: newUser,
+    });
   } catch (error) {
     return NextResponse.json({ error: "Внутренняя ошибка сервера 🤖" });
   }

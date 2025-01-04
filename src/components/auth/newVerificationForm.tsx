@@ -29,14 +29,18 @@ export const NewVerificationForm = () => {
     }
 
     try {
-      const response = await verifyEmail(token);
-      if (response.success) {
-        setSuccess(response.success);
+      const response = await verifyEmail({ token });
+      if ("success" in response) {
+        if (typeof response.success === "boolean") {
+          setSuccess("Почта подтверждена!");
+        } else {
+          setSuccess(response.success);
+        }
       } else {
-        setError(response.error || "Something went wrong!");
+        setError(response.error || "Что-то пошло не так!");
       }
     } catch (err: any) {
-      setError("Something went wrong!");
+      setError("Что-то пошло не так!");
     }
   }, [token, success, error]);
 
@@ -48,19 +52,19 @@ export const NewVerificationForm = () => {
     <section key="login-form" className="flex items-center justify-center">
       <Container>
         <div className="flex flex-col gap-4 p-4 border-[1px] border-solid border-input bg-card rounded-lg mt-[300px]">
-          <p className="text-lg font-bold">Confirming your verification!</p>
+          <p className="text-lg font-bold">Проходит верификация!</p>
           <div className=" flex flex-col items-center gap-4 mt-[10px] mb-[5px]">
             {!success && !error && <BarLoader color="#6d28d9" />}
             <FormSuccess message={success} />
             {!success && <FormError message={error} />}
-            <p className="opacity-50">Please wait Loading</p>
+            <p className="opacity-50">Пожалуйста, подождите</p>
           </div>
           <Button
             variant="secondary"
             type="button"
             onClick={() => router.push("/auth/login")}
           >
-            Back to Login
+            Вернуться к входу
           </Button>
         </div>
       </Container>

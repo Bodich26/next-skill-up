@@ -3,8 +3,6 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import axios from "axios";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button, Input } from "@/components/ui";
 import { Container } from "@/components/shared";
@@ -29,8 +27,6 @@ export const ResetForm: React.FC<IProps> = () => {
   const [success, setSuccess] = React.useState<string | undefined>("");
   const [isPending, startTransition] = React.useTransition();
 
-  const router = useRouter();
-
   const resetForm = useForm<z.infer<typeof ResetSchema>>({
     resolver: zodResolver(ResetSchema),
     defaultValues: {
@@ -44,11 +40,15 @@ export const ResetForm: React.FC<IProps> = () => {
 
     startTransition(async () => {
       try {
-        const response = await sendPasswordResetEmail(values.email);
-        if (response.success) {
-          setSuccess(response.success);
+        const response = await sendPasswordResetEmail(values);
+        if ("success" in response) {
+          if (typeof response.success === "boolean") {
+            setSuccess("Письмо для сброса пароля успешно отправлено!");
+          } else {
+            setSuccess(response.success);
+          }
         } else {
-          setError(response.error || "Something went wrong!");
+          setError(response.error || "Что-то пошло не так!");
         }
       } catch (e) {
         setError("Something went wrong!");

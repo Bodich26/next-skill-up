@@ -3,7 +3,7 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { useRouter, useSearchParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import { boolean, z } from "zod";
 import Link from "next/link";
 import { Button, Input } from "@/components/ui";
 import { Container } from "@/components/shared";
@@ -28,7 +28,6 @@ export const NewPasswordForm: React.FC<IProps> = () => {
   const [isPending, startTransition] = React.useTransition();
 
   const searchParams = useSearchParams();
-  const router = useRouter();
   const token = searchParams.get("token");
 
   const resetForm = useForm<z.infer<typeof NewPasswordSchema>>({
@@ -49,15 +48,22 @@ export const NewPasswordForm: React.FC<IProps> = () => {
 
     startTransition(async () => {
       try {
-        const response = await resetPassword(values.password, token);
+        const response = await resetPassword({
+          password: values.password,
+          token,
+        });
 
-        if (response.success) {
-          setSuccess(response.success);
+        if ("success" in response) {
+          if (typeof response.success === "boolean") {
+            setSuccess("Пароль обновлен!");
+          } else {
+            setSuccess(response.success);
+          }
         } else {
-          setError(response.error || "Something went wrong!");
+          setError(response.error || "Что-то пошло не так!");
         }
       } catch (e) {
-        setError("Something went wrong!");
+        setError("Что-то пошло не так!");
       }
     });
   };
