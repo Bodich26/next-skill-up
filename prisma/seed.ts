@@ -1,33 +1,24 @@
-import { rewards } from "./constants";
+import { quizQuestions } from "./constants";
 import { prisma } from "./prisma-client";
-import { hashSync } from "bcrypt";
 
 async function up() {
-  await prisma.user.createMany({
-    data: [
-      {
-        name: "Bodich",
-        email: "test@gmail.com",
-        password: hashSync("123456", 10),
-        role: "FRONT_END",
-        rating: 0,
-        studyTimes: 0,
-        taskCompleted: 0,
-        iconRating: "https://imgur.com/6v8ga6N.png",
+  for (const question of quizQuestions) {
+    const createQuizItem = await prisma.quizItem.create({
+      data: {
+        number: question.number,
+        description: question.description,
+        roles: question.roles,
+        technology: question.technology,
+        optional: {
+          create: question.optional?.create,
+        },
       },
-    ],
-  });
+    });
+  }
+}
 
-  await prisma.reward.createMany({
-    data: rewards,
-  });
-}
-async function down() {
-  await prisma.$executeRaw`TRUNCATE TABLE "User" RESTART IDENTITY CASCADE`;
-}
 async function main() {
   try {
-    await down();
     await up();
   } catch (e) {
     console.error(e);

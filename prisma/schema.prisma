@@ -15,6 +15,17 @@ enum Role {
   CG_ARTIST
 }
 
+enum Technology {
+  HTML
+  CSS
+  JS
+  REACT
+  TS
+  NEXT
+  WEB
+  SECURITY
+}
+
 model User {
   id            String     @id @default(cuid())
   name          String     @unique
@@ -123,6 +134,25 @@ model Task {
   userId       String
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+}
+
+model QuizItem {
+  id           Int          @id @default(autoincrement())
+  number       Int          @unique
+  description  String
+  roles        Role[]
+  technology   Technology
+  optional     QuizAnswer[] @relation("QuizItemAnswers") 
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+}
+
+model QuizAnswer {
+  id           Int          @id @default(autoincrement())
+  text         String
+  isCorrect    Boolean
+  quizItem     QuizItem     @relation("QuizItemAnswers", fields: [quizItemId], references: [id], onDelete: Cascade)
+  quizItemId   Int
 }
 
 model Leaderboard {
