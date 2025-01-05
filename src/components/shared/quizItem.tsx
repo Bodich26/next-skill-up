@@ -2,17 +2,13 @@ import React from "react";
 import { Label, RadioGroup } from "../ui";
 import { RadioGroupItem } from "../ui/radio-group";
 import { useFormContext } from "react-hook-form";
-
-interface AnswerOptionItem {
-  answer: string;
-  isCorrect: boolean;
-}
+import { QuizAnswer } from "@prisma/client";
 
 interface Props {
-  numberQuestion: string;
+  numberQuestion: number;
   question: string;
-  answerOptionItem: AnswerOptionItem[];
-  quizId: string;
+  answerOptionItem: QuizAnswer[];
+  quizId: number;
 }
 
 export const QuizItem: React.FC<Props> = ({
@@ -35,15 +31,17 @@ export const QuizItem: React.FC<Props> = ({
       </div>
       <ul className="border-l-2 border-solid border-input basis-[45%]">
         <li className="ml-3 flex flex-col gap-4">
-          <RadioGroup>
+          <RadioGroup className="flex flex-col gap-4">
             {answerOptionItem.map((item, index) => (
               <div key={index} className="flex items-center gap-2">
                 <RadioGroupItem
-                  value={item.answer}
+                  value={item.text}
                   id={`${quizId}-${index}`}
                   {...register(`selectedAnswers.${quizId}`)}
                 />
-                <Label htmlFor={`${quizId}-${index}`}>{item.answer}</Label>
+                <Label className=" leading-5" htmlFor={`${quizId}-${index}`}>
+                  {item.text}
+                </Label>
               </div>
             ))}
           </RadioGroup>

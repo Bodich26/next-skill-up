@@ -115,7 +115,7 @@ export const TasksList: React.FC<Props> = () => {
           />
         </div>
       </div>
-      <div className="flex flex-col gap-5 overflow-y-auto min-h-[704px] max-h-[704px] mt-7">
+      <div className="flex flex-col gap-5 overflow-y-auto h-[100vh] mt-7">
         {isLoading ? (
           Array(5)
             .fill(0)

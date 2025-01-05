@@ -11,11 +11,11 @@ interface IUsers {
 export default function DisplayUser({ user }: IUsers) {
   return (
     <div>
-      <div className="border-[1px] border-solid border-input bg-card flex gap-9 items-start p-4 rounded-lg min-h-[258px]">
+      <div className="border-[1px] border-solid border-input bg-card flex gap-9 items-start p-4 rounded-lg">
         <Image
           src={user?.iconRating || ""}
-          width={223}
-          height={224}
+          width={214}
+          height={214}
           alt="Rating"
         />
         <div className="flex flex-col gap-2 ">

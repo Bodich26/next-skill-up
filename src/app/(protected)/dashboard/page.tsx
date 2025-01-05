@@ -7,7 +7,7 @@ export default async function Dashboard() {
       <div className="basis-[66%] flex flex-col gap-8">
         <GetUsers />
       </div>
-      <div className="basis-[34%] border-[1px] border-solid border-input bg-card row-span-2 rounded-lg p-4">
+      <div className="basis-[34%] border-[1px] border-solid border-input bg-card rounded-lg p-4 flex-grow">
         <Leaderboard />
       </div>
     </div>

@@ -114,4 +114,5 @@
 * {
   scrollbar-width: thin; /* Уменьшенная ширина скроллбара */
   scrollbar-color: hsl(var(--accent)) hsl(var(--background)); /* Цвет ползунка и трека */
+  box-sizing: border-box;
 }

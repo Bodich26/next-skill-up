@@ -44,7 +44,7 @@ export const fetchTasksList = createAsyncThunk(
       console.log("Tasks from server:", response);
       return response;
     } catch (error) {
-      console.log("Error fetching tasks:", error);
+      console.error("Error fetching tasks:", error);
       throw error;
     }
   }

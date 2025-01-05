@@ -39,13 +39,7 @@ export const LeaderItemBox: React.FC<Props> = ({
         </dl>
         <span className="font-bold text-base">{userRole}</span>
       </div>
-      <Image
-        src={urlIconRating}
-        width={164}
-        height={164}
-        alt="IconRating"
-        className=" max-w-[164px] max-h-[164px]"
-      />
+      <Image src={urlIconRating} width={164} height={164} alt="IconRating" />
     </div>
   );
 };

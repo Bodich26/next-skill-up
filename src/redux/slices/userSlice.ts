@@ -13,10 +13,8 @@ export const fetchUser = createAsyncThunk(
   async (userId: string) => {
     try {
       const response = await Api.users.user(userId);
-      console.log("User from server:", response);
       return response;
     } catch (error) {
-      console.log("Error fetching users:", error);
       throw error;
     }
   }

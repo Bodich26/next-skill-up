@@ -1,36 +1,21 @@
 "use client";
 import React from "react";
 import { useRouter } from "next/navigation";
-
 import { QuizItem } from "@/components/shared";
 import { Button, Form, PopupExitQuiz } from "@/components/ui";
 import { useForm } from "react-hook-form";
 import { quizSchema } from "@/components/shared/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Role } from "@prisma/client";
+import { Technology } from "@prisma/client";
 import { ChevronLeft } from "lucide-react";
-import { Technology } from "@/type";
+import { QuizItemWithAnswers } from "@/type";
 
 interface IProps {
-  filterDataQuestions: Question[];
+  filterQuiz: QuizItemWithAnswers[];
   technology: Technology;
 }
 
-interface Question {
-  id: string;
-  number: string;
-  description: string;
-  role: Role[];
-  technology: string;
-  optional: OptionalAnswer[];
-}
-
-interface OptionalAnswer {
-  answer: string;
-  isCorrect: boolean;
-}
-
-export const QuizForm = ({ filterDataQuestions, technology }: IProps) => {
+export const QuizForm = ({ filterQuiz, technology }: IProps) => {
   const [isPending, startTransition] = React.useTransition();
   const router = useRouter();
 
@@ -55,7 +40,7 @@ export const QuizForm = ({ filterDataQuestions, technology }: IProps) => {
   const nameTechnology = technology
     ? technology.charAt(0).toUpperCase() + technology.slice(1)
     : "";
-  const noQuestions = filterDataQuestions.length == 0;
+  const noQuestions = filterQuiz.length == 0;
 
   const handleExitTests = () => {
     router.push("/dashboard/tests");
@@ -65,7 +50,7 @@ export const QuizForm = ({ filterDataQuestions, technology }: IProps) => {
     <>
       <Form {...quizPost}>
         <form onSubmit={quizPost.handleSubmit(handleSubmitQuiz)}>
-          <div className="border-[1px] border-solid border-input bg-card rounded-lg p-4 min-h-[806px] max-h-[806px]">
+          <div className="border-[1px] border-solid border-input bg-card rounded-lg p-4 ">
             <div className="flex items-center justify-between mb-7">
               <div className="flex items-center gap-3">
                 {noQuestions ? (
@@ -109,7 +94,7 @@ export const QuizForm = ({ filterDataQuestions, technology }: IProps) => {
                   {noQuestions ? (
                     <h2>Нету Вопросов</h2>
                   ) : (
-                    filterDataQuestions.map((quiz) => (
+                    filterQuiz.map((quiz) => (
                       <QuizItem
                         key={quiz.id}
                         numberQuestion={quiz.number}

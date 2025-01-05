@@ -96,7 +96,7 @@ export const Leaderboard: React.FC<Props> = ({ className }) => {
           </SelectContent>
         </Select>
       </div>
-      <div className="flex flex-row flex-wrap justify-center items-start gap-6 overflow-y-auto max-h-[575px] mt-7">
+      <div className="flex flex-row flex-wrap justify-center items-start gap-6 overflow-y-auto max-h-[650px] mt-7">
         {userLeaders
           .filter((user) => {
             const userNick = user.name.includes(filterName);
