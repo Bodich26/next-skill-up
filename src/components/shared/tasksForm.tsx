@@ -72,9 +72,8 @@ export const TasksForm: React.FC<Props> = ({ className }) => {
   };
 
   return (
-    <div className="basis-[25%] border-[1px] border-solid border-input bg-card rounded-lg p-4">
+    <div>
       <h3 className="font-bold text-3xl text-center mb-6">Создать задачу</h3>
-
       <form
         onSubmit={handleSubmit}
         className="flex flex-col gap-5 justify-center m-auto max-w-[250px]"

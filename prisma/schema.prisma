@@ -138,7 +138,7 @@ model Task {
 
 model QuizItem {
   id           Int          @id @default(autoincrement())
-  number       Int          @unique
+  number       Int          
   description  String
   roles        Role[]
   technology   Technology

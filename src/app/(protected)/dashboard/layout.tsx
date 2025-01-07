@@ -13,7 +13,7 @@ export default function AuthLayout({
         <div className="sidebar flex-2 w-[231px] border-[1px] border-solid border-input bg-card rounded-lg">
           <Sidebar />
         </div>
-        <div className="content flex-1 pt-8 pr-24">
+        <div className="flex flex-col flex-1 pt-8 pr-24">
           <Navbar />
           {children}
         </div>

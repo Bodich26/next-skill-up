@@ -53,23 +53,21 @@ const technology = [
 
 export default function Products() {
   return (
-    <div className="border-[1px] border-solid border-input bg-card rounded-lg p-4 min-h-[806px] max-h-[806px]">
-      <div className=" flex items-center justify-between">
-        <div className="flex items-center">
-          <h3 className="font-bold text-3xl">Выберите технологию</h3>
+    <div className="flex justify-between gap-8 flex-grow">
+      <div className="border-[1px] p-4 border-solid border-input bg-card rounded-lg">
+        <h3 className="font-bold text-3xl mb-3">Выберите технологию</h3>
+        <div className="flex flex-row flex-wrap justify-start gap-5 overflow-auto max-h-[770px]">
+          {technology.map((item) => {
+            return (
+              <TechnologyItem
+                key={item.index}
+                itemIcon={item.icon}
+                itemName={item.name}
+                itemLink={item.link}
+              />
+            );
+          })}
         </div>
-      </div>
-      <div className="flex flex-row overflow-y-auto mt-7 gap-[64px] flex-wrap">
-        {technology.map((item) => {
-          return (
-            <TechnologyItem
-              key={item.index}
-              itemIcon={item.icon}
-              itemName={item.name}
-              itemLink={item.link}
-            />
-          );
-        })}
       </div>
     </div>
   );

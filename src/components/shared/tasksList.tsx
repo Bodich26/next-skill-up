@@ -49,7 +49,7 @@ export const TasksList: React.FC<Props> = () => {
       const resultAction = await dispatch(removeUserTask({ idTask }));
       if (removeUserTask.fulfilled.match(resultAction)) {
         await dispatch(fetchTasksList());
-        toast.success("Задача выполнена успешно 😀");
+        toast.success("Задача удалена успешно 😀");
       } else if (removeUserTask.rejected.match(resultAction)) {
         toast.error("Ошибка при удалении задачи 😞");
       }
@@ -96,7 +96,7 @@ export const TasksList: React.FC<Props> = () => {
   };
 
   return (
-    <div className="basis-[75%] border-[1px] border-solid border-input bg-card row-span-2 rounded-lg p-4">
+    <>
       <div className=" flex items-center justify-between">
         <div className="flex items-center gap-10">
           <h3 className="font-bold text-3xl">Список задач</h3>
@@ -115,7 +115,7 @@ export const TasksList: React.FC<Props> = () => {
           />
         </div>
       </div>
-      <div className="flex flex-col gap-5 overflow-y-auto h-[100vh] mt-7">
+      <div className="flex flex-col gap-5 overflow-y-auto max-h-[750px] mt-7">
         {isLoading ? (
           Array(5)
             .fill(0)
@@ -145,6 +145,6 @@ export const TasksList: React.FC<Props> = () => {
         )}
       </div>
       <Toaster position="bottom-left" expand={false} />
-    </div>
+    </>
   );
 };

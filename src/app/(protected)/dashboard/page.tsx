@@ -3,7 +3,7 @@ import { Leaderboard } from "@/components/shared/leaderboard";
 
 export default async function Dashboard() {
   return (
-    <div className="flex justify-between gap-8 ">
+    <div className="flex justify-between gap-8 flex-grow">
       <div className="basis-[66%] flex flex-col gap-8">
         <GetUsers />
       </div>
