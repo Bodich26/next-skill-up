@@ -14,3 +14,4 @@ export { SignInButton } from "./signInButton";
 export { Checkbox } from "./checkbox";
 export { RadioGroup } from "./radio-group";
 export { PopupExitQuiz } from "./popupExitQuiz";
+export { PopupResultQuiz } from "./popupResultQuiz";
