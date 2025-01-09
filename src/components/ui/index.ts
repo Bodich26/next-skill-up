@@ -15,3 +15,4 @@ export { Checkbox } from "./checkbox";
 export { RadioGroup } from "./radio-group";
 export { PopupExitQuiz } from "./popupExitQuiz";
 export { PopupResultQuiz } from "./popupResultQuiz";
+export { AlertDialog } from "./alert-dialog";

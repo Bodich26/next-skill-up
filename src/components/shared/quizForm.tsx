@@ -76,6 +76,7 @@ export const QuizForm = ({ filterQuiz, technology }: IProps) => {
     setCorrectAnswers(0);
     setWrongAnswers(0);
     setArrayAnswers([]);
+    handleExitTests();
   };
 
   return (

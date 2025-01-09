@@ -1,16 +1,14 @@
 "use client";
 import React from "react";
-import { useRouter } from "next/navigation";
 import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "./dialog";
-import { Button } from "./button";
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "./alert-dialog";
+import { AlertDialogDescription } from "@radix-ui/react-alert-dialog";
 
 interface IProps {
   nameTechnology: string;
@@ -29,36 +27,33 @@ export const PopupResultQuiz: React.FC<IProps> = ({
   isOpen,
   onClose,
 }) => {
-  const router = useRouter();
-
-  const handleExitTests = () => {
-    onClose();
-    router.push("/dashboard/tests");
-  };
+  if (!isOpen) return null;
 
   return (
     <div className={className}>
-      <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="flex justify-between flex-col-reverse ">
-          <Button
-            className=" mt-[30px]"
-            type="submit"
-            onClick={() => handleExitTests()}
-          >
-            Подтвердить
-          </Button>
-          <DialogHeader className=" gap-1">
-            <DialogTitle className="font-bold text-3xl">
+      <AlertDialog open={isOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader className=" gap-1">
+            <AlertDialogTitle className="font-bold text-3xl">
               Тесты по {nameTechnology}
-            </DialogTitle>
-            <div className="w-[477px] h-[1px] bg-input rounded"></div>
-            <DialogDescription className="font-normal text-base max-w-[477px]">
+            </AlertDialogTitle>
+            <div className="w-[100%] h-[1px] bg-input rounded"></div>
+            <AlertDialogDescription className="font-normal text-base">
               Правильных ответов : {correctAnswer} <br />
               Не правильных ответов : {wrongAnswer}
-            </DialogDescription>
-          </DialogHeader>
-        </DialogContent>
-      </Dialog>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction
+              className="w-[100%] mt-[2px]"
+              type="submit"
+              onClick={() => onClose()}
+            >
+              Подтвердить
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
